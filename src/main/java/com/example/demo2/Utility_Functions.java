@@ -39,8 +39,8 @@ class Vec2{
 }
 class Block{
     public final Physics_Model physics_model;
-    Block(Rectangle rc, double m){
-        physics_model = new Physics_Model(rc,new Point2D(5,0), m);
+    Block(Rectangle rc, double m, Point2D V0){
+        physics_model = new Physics_Model(rc,V0, m);
     }
     public Rectangle getRectangle() {
         return physics_model.get_rectangle();

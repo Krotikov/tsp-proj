@@ -50,10 +50,10 @@ public class Unity {
 
 
         // add block
-        Block block = add_block (0,0,50,50,40);
+        Block block = add_block (0,0,50,50,40,new Point2D(20,0));
 
         // add platform
-        Block platform = add_block(0,SCENE_Y-100,5000,10,40);
+        Block platform = add_block(0,SCENE_Y-100,5000,10,20,new Point2D(0,0));
 
         // add text
         Text text = new Text("FF");
@@ -145,8 +145,8 @@ public class Unity {
 
 
     }
-    private Block add_block(double x,double y,double weight,double height,double mass){
-        Block block = new Block(new Rectangle(x,y,weight,height),mass);
+    private Block add_block(double x,double y,double weight,double height,double mass, Point2D speed){
+        Block block = new Block(new Rectangle(x,y,weight,height), mass, speed);
         blocks.add(block);
         return block;
     }
