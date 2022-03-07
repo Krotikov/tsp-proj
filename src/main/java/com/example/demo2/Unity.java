@@ -43,7 +43,7 @@ public class Unity {
     final double SCENE_Y = 600;
     final double TIMER = 0.1;
 
-    public void unObjects(Stage stage){
+    public void unObjects(){
         /*
         * function for add objects
         * */
