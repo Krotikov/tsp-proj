@@ -29,7 +29,7 @@ class Physics_Model {
             a = (g * m - Math.signum(v0) * power_resistance.getY()) / m;
             return a * t + v0;
         }
-        return 0;
+        return v0;
     }
 
     public double get_speed_x(double t, double v0, double m) {
@@ -45,7 +45,7 @@ class Physics_Model {
             a = power_resistance.getX() / m;
             return a * t + v0;
         }
-        return 0;
+        return v0;
     }
 
     public Point2D getV() {
