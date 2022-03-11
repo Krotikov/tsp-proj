@@ -7,16 +7,16 @@ class Physics_Model {
 
     // final.
     public final double g = 9.806; //9.806
-    public final Point2D power_resistance = new Point2D(0, 120);
+    public final Point2D power_resistance = new Point2D(10, 120);
 
     // object.
     private final double mass;
     private final Rectangle rectangle;
-    public Point2D V;
-    private static boolean stop = false;
+    private Point2D V;
+    private boolean stop = false;
 
 
-    public double get_speed_y(double t, double v0, double m) {
+    public double getSpeedY(double t, double v0, double m) {
         /*
         * t[IN]: time
         * v0[IN]: start speed
@@ -32,7 +32,7 @@ class Physics_Model {
         return v0;
     }
 
-    public double get_speed_x(double t, double v0, double m) {
+    public double getSpeedX(double t, double v0, double m) {
         /*
          * t[IN]: time
          * v0[IN]: start speed
@@ -55,7 +55,14 @@ class Physics_Model {
         return V;
     }
 
-    public Rectangle get_rectangle() {
+    public void setV(Point2D new_v){
+        /*
+        *
+        * */
+        V = new_v;
+    }
+
+    public Rectangle getRectangle() {
         return rectangle;
     }
 
@@ -65,18 +72,18 @@ class Physics_Model {
         V = V1;
     }
 
-    public void add_power(Point2D pow) {
+    public void addPower(Point2D pow) {
         power_resistance.add(pow);
     }
 
-    public void stop_power() {
+    public void stopPower() {
         /*
         * Uniform movement
         * */
         stop = true;
     }
 
-    public void start_power() {
+    public void startPower() {
         /*
         * Uniformly accelerated motion
         * */
@@ -89,31 +96,31 @@ class Physics_Model {
         * t[IN]: time
         * */
 
-        double V_new_x = get_speed_x(t, V.getX(), mass);
+        double V_new_x = getSpeedX(t, V.getX(), mass);
         double x_0 = rectangle.getX();
         double x = x_0 + (V_new_x + V.getX()) * t / 2;
         rectangle.setX(x);
 
-        double V_new_y = get_speed_y(t, V.getY(), mass);
+        double V_new_y = getSpeedY(t, V.getY(), mass);
         double y_0 = rectangle.getY();
         double y = y_0 + (V_new_y + V.getY()) * t / 2;
         rectangle.setY(y);
         V = new Point2D(V_new_x, V_new_y);
     }
 
-    public void inv_y(double k) {
+    public void invY(double k) {
         V = new Point2D(V.getX(), k * V.getY());
     }
 
-    public void inv_x(double k) {
+    public void invX(double k) {
         V = new Point2D(k * V.getX(), V.getY());
     }
 
-    public void add_x(double x) {
+    public void addX(double x) {
         V = new Point2D(V.getX() + x, V.getY());
     }
 
-    public void add_y(double y) {
+    public void addY(double y) {
         V = new Point2D(V.getX(), V.getY() + y);
     }
 }

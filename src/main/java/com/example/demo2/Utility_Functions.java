@@ -21,19 +21,19 @@ class Vec2{
         point_2 = null;
     }
 
-    public Point2D getPoint_1() {
+    public Point2D getPoint1() {
         return point_1;
     }
 
-    public Point2D getPoint_2() {
+    public Point2D getPoint2() {
         return point_2;
     }
 
-    public void setPoint_1(Point2D point_1) {
+    public void setPoint1(Point2D point_1) {
         this.point_1 = point_1;
     }
 
-    public void setPoint_2(Point2D point_2) {
+    public void setPoint2(Point2D point_2) {
         this.point_2 = point_2;
     }
 }
@@ -43,7 +43,7 @@ class Block{
         physics_model = new Physics_Model(rc,V0, m);
     }
     public Rectangle getRectangle() {
-        return physics_model.get_rectangle();
+        return physics_model.getRectangle();
     }
     public void run(double t){
         physics_model.run(t);
@@ -57,19 +57,19 @@ class Utility_Functions {
     private static final List<Block> blocks = new ArrayList<>();
 
 
-    static Point2D get_point(Vec2 vec1, Vec2 vec2) {
+    static Point2D getPoint(Vec2 vec1, Vec2 vec2) {
         /*
          * point of intersect vector's
          * */
-        double x1_1 = vec1.getPoint_1().getX();
-        double x1_2 = vec1.getPoint_2().getX();
-        double y1_1 = vec1.getPoint_1().getY();
-        double y1_2 = vec1.getPoint_2().getY();
+        double x1_1 = vec1.getPoint1().getX();
+        double x1_2 = vec1.getPoint2().getX();
+        double y1_1 = vec1.getPoint1().getY();
+        double y1_2 = vec1.getPoint2().getY();
 
-        double x2_1 = vec2.getPoint_1().getX();
-        double x2_2 = vec2.getPoint_2().getX();
-        double y2_1 = vec2.getPoint_1().getY();
-        double y2_2 = vec2.getPoint_2().getY();
+        double x2_1 = vec2.getPoint1().getX();
+        double x2_2 = vec2.getPoint2().getX();
+        double y2_1 = vec2.getPoint1().getY();
+        double y2_2 = vec2.getPoint2().getY();
 
         double x, y;
 
@@ -110,7 +110,7 @@ class Utility_Functions {
 
     }
 
-    static List<Vec2> get_vectors(Block block) {
+    static List<Vec2> getVectors(Block block) {
         /*
          * return: array of rectangle's vector components
          * add_sides - add two additional vectors or not
@@ -142,8 +142,8 @@ class Utility_Functions {
         vec2s.add(vec2_2);
 
         {
-            vec2s.add(new Vec2(vec2_1.getPoint_2(), vec2_2.getPoint_2()));
-            vec2s.add(new Vec2(vec2_1.getPoint_1(), vec2_2.getPoint_1()));
+            vec2s.add(new Vec2(vec2_1.getPoint2(), vec2_2.getPoint2()));
+            vec2s.add(new Vec2(vec2_1.getPoint1(), vec2_2.getPoint1()));
         }
 
 
@@ -154,13 +154,13 @@ class Utility_Functions {
         /*
         * return Point of intersects block1 and block2
         * */
-        List<Vec2> vec2List_block1 = get_vectors(block1);
-        List<Vec2> vec2List_block2 = get_vectors(block2);
+        List<Vec2> vec2List_block1 = getVectors(block1);
+        List<Vec2> vec2List_block2 = getVectors(block2);
         Point2D point2D;
         if (block1.getRectangle().getBoundsInParent().intersects(block2.getRectangle().getBoundsInParent())) {
             for (Vec2 vec2 : vec2List_block1) {
                 for (Vec2 vec21 : vec2List_block2) {
-                    point2D = get_point(vec2, vec21);
+                    point2D = getPoint(vec2, vec21);
                     if (point2D != null) {
                         return point2D;
                     }

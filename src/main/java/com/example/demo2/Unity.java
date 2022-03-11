@@ -50,10 +50,10 @@ public class Unity {
 
 
         // add block
-        Block block = add_block (0,0,50,50,40,new Point2D(20,0));
+        Block block = addBlock (0,0,50,50,40,new Point2D(20,0));
 
         // add platform
-        Block platform = add_block(0,SCENE_Y-100,5000,10,20,new Point2D(0,0));
+        Block platform = addBlock(0,SCENE_Y-300,5000,10,20,new Point2D(0,0));
 
         // add text
         Text text = new Text("FF");
@@ -70,8 +70,6 @@ public class Unity {
         Group group = new Group();
         Scene scene = new Scene(group,SCENE_X,SCENE_Y);
 
-
-
         Block block = blocks.get(BLOCKS.BLOCKS.id);
         Block platform = blocks.get(BLOCKS.PLATFORM.id);
 
@@ -84,8 +82,11 @@ public class Unity {
                 if(point2 != null) {
                     Circle circle = new Circle(point2.getX(),point2.getY(),2, Color.RED);
                     block.run(-TIMER);
-                    block.physics_model.inv_y(-1);
+                    block.physics_model.invY(-1);
                     group.getChildren().add(circle);
+                    block.physics_model.stopPower();
+                }else{
+                    block.physics_model.startPower();
                 }
             }
         }.start();
@@ -107,10 +108,10 @@ public class Unity {
             @Override
             public void handle(KeyEvent keyEvent) {
                 switch (keyEvent.getCode()){
-                    case UP -> block.physics_model.add_y(-40);
-                    case DOWN -> block.physics_model.add_y(40);
-                    case LEFT -> block.physics_model.add_x(-40);
-                    case RIGHT -> block.physics_model.add_x(40);
+                    case UP -> block.physics_model.addY(-40);
+                    case DOWN -> block.physics_model.addY(40);
+                    case LEFT -> block.physics_model.addX(-40);
+                    case RIGHT -> block.physics_model.addX(40);
                     case R -> {
                         block.getRectangle().setScaleX(block.getRectangle().getScaleX() + 10);
                     }
@@ -133,8 +134,8 @@ public class Unity {
                         Transform transform = block.getRectangle().getLocalToSceneTransform();
                     }
                     case SPACE -> {
-                        block.physics_model.inv_x(0);
-                        block.physics_model.inv_y(0);
+                        block.physics_model.invX(0);
+                        block.physics_model.invY(0);
                     }
                 }
             }
@@ -145,7 +146,7 @@ public class Unity {
 
 
     }
-    private Block add_block(double x,double y,double weight,double height,double mass, Point2D speed){
+    private Block addBlock(double x,double y,double weight,double height,double mass, Point2D speed){
         Block block = new Block(new Rectangle(x,y,weight,height), mass, speed);
         blocks.add(block);
         return block;
