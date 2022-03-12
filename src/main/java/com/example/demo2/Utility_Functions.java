@@ -57,10 +57,10 @@ class Utility_Functions {
     private static final List<Block> blocks = new ArrayList<>();
 
 
+    /*
+     * point of intersect vector's
+     * */
     static Point2D getPoint(Vec2 vec1, Vec2 vec2) {
-        /*
-         * point of intersect vector's
-         * */
         double x1_1 = vec1.getPoint1().getX();
         double x1_2 = vec1.getPoint2().getX();
         double y1_1 = vec1.getPoint1().getY();
@@ -110,11 +110,11 @@ class Utility_Functions {
 
     }
 
+    /*
+     * return: array of rectangle's vector components
+     * add_sides - add two additional vectors or not
+     * */
     static List<Vec2> getVectors(Block block) {
-        /*
-         * return: array of rectangle's vector components
-         * add_sides - add two additional vectors or not
-         * */
 
         Transform transform = block.getRectangle().getLocalToParentTransform();
 
@@ -150,10 +150,10 @@ class Utility_Functions {
         return vec2s;
     }
 
+    /*
+     * return Point of intersects block1 and block2
+     * */
     static Point2D intersects(Block block1, Block block2) {
-        /*
-        * return Point of intersects block1 and block2
-        * */
         List<Vec2> vec2List_block1 = getVectors(block1);
         List<Vec2> vec2List_block2 = getVectors(block2);
         Point2D point2D;

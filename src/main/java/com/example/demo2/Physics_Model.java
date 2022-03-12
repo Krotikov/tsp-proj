@@ -16,14 +16,14 @@ class Physics_Model {
     private boolean stop = false;
 
 
+    /*
+     * t[IN]: time
+     * v0[IN]: start speed
+     * m[IN]: mass of object
+     * V[OUT]: total speed
+     * returns the speed on the y-axis (including forces)
+     * */
     public double getSpeedY(double t, double v0, double m) {
-        /*
-        * t[IN]: time
-        * v0[IN]: start speed
-        * m[IN]: mass of object
-        * V[OUT]: total speed
-        * returns the speed on the y-axis (including forces)
-        * */
         double a = 0;
         if (!stop) {
             a = (g * m - Math.signum(v0) * power_resistance.getY()) / m;
@@ -32,14 +32,14 @@ class Physics_Model {
         return v0;
     }
 
+    /*
+     * t[IN]: time
+     * v0[IN]: start speed
+     * m[IN]: mass of object
+     * V[OUT]: total speed
+     * returns the speed on the x-axis (including forces)
+     * */
     public double getSpeedX(double t, double v0, double m) {
-        /*
-         * t[IN]: time
-         * v0[IN]: start speed
-         * m[IN]: mass of object
-         * V[OUT]: total speed
-         * returns the speed on the x-axis (including forces)
-         * */
         double a = 0;
         if (!stop) {
             a = power_resistance.getX() / m;
@@ -48,17 +48,17 @@ class Physics_Model {
         return v0;
     }
 
+    /*
+     * V[OUT]: vector speed
+     * */
     public Point2D getV() {
-        /*
-        * V[OUT]: vector speed
-        * */
         return V;
     }
 
+    /*
+     * set speed
+     * */
     public void setV(Point2D new_v){
-        /*
-        *
-        * */
         V = new_v;
     }
 
@@ -76,25 +76,25 @@ class Physics_Model {
         power_resistance.add(pow);
     }
 
+    /*
+     * Uniform movement
+     * */
     public void stopPower() {
-        /*
-        * Uniform movement
-        * */
         stop = true;
     }
 
+    /*
+     * Uniformly accelerated motion
+     * */
     public void startPower() {
-        /*
-        * Uniformly accelerated motion
-        * */
         stop = false;
     }
 
+    /*
+     * function for changes position of object (include powers or not)
+     * t[IN]: time
+     * */
     public void run(double t) {
-        /*
-        * function for changes position of object (include powers or not)
-        * t[IN]: time
-        * */
 
         double V_new_x = getSpeedX(t, V.getX(), mass);
         double x_0 = rectangle.getX();

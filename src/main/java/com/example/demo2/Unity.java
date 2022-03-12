@@ -43,10 +43,10 @@ public class Unity {
     final double SCENE_Y = 600;
     final double TIMER = 0.1;
 
+    /*
+     * function for add objects
+     * */
     public void unObjects(){
-        /*
-        * function for add objects
-        * */
 
 
         // add block
