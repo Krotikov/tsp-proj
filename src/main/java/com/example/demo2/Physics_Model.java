@@ -107,13 +107,10 @@ class Physics_Model {
         stop = false;
     }
 
-    /*
-     * function for changes position of object (include powers or not)
-     * t[IN]: time
-     * */
-    public double getAngularAcceleration(Point2D point2D){
+
+    public double getAngularAcceleration(Point2D fulcrum){
         double coefficient = 10;
-        Point2D R = Utility_Functions.CenterRectangle(rectangle).subtract(point2D);
+        Point2D R = Utility_Functions.CenterRectangle(rectangle).subtract(fulcrum);
         System.out.println(" ---- !!! !!!!  " + w);
         double w_new = (R.getX() * (power_resistance.getY() + g * mass) - R.getY()*power_resistance.getX())/(getMomentOfInertia()/coefficient);
         System.out.println(w_new);
