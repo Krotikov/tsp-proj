@@ -2,6 +2,7 @@ package com.example.demo2;
 
 import javafx.geometry.Point2D;
 import javafx.scene.shape.Rectangle;
+import javafx.scene.transform.Rotate;
 import javafx.scene.transform.Transform;
 
 import java.util.ArrayList;
@@ -45,8 +46,8 @@ class Block{
     public Rectangle getRectangle() {
         return physics_model.getRectangle();
     }
-    public void run(double t){
-        physics_model.run(t);
+    public void run(double t,List<Point2D>intersection){
+        physics_model.run(t, intersection);
     }
 }
 
@@ -153,7 +154,9 @@ class Utility_Functions {
     /*
      * return Point of intersects block1 and block2
      * */
-    static Point2D intersects(Block block1, Block block2) {
+    static List<Point2D> intersects(Block block1, Block block2) {
+        List<Point2D> point2DS = new ArrayList<>();
+
         List<Vec2> vec2List_block1 = getVectors(block1);
         List<Vec2> vec2List_block2 = getVectors(block2);
         Point2D point2D;
@@ -162,11 +165,47 @@ class Utility_Functions {
                 for (Vec2 vec21 : vec2List_block2) {
                     point2D = getPoint(vec2, vec21);
                     if (point2D != null) {
-                        return point2D;
+                        point2DS.add(point2D);
                     }
                 }
             }
         }
-        return null;
+        return point2DS;
+    }
+    /*
+    * return point of Center of block (center of mass)
+    * */
+    public static Point2D CenterRectangle(Rectangle rectangle){
+        Transform transform = rectangle.getLocalToParentTransform();
+        Point2D point1 = transform.transform(new Point2D(rectangle.getX(),rectangle.getY()));
+        Point2D point2 = transform.transform(new Point2D(rectangle.getX() + rectangle.getWidth(),rectangle.getY() + rectangle.getHeight()));
+        return point1.midpoint(point2);
+    }
+
+    public static void RotateOfPoint(Point2D point2, Rectangle rectangle, double phi){
+        Rotate rotate = new Rotate();
+        double y_center = rectangle.getBoundsInParent().getCenterY();
+        double x_center = rectangle.getBoundsInParent().getCenterX();
+
+        rotate.setPivotY(point2.getY());
+        rotate.setPivotX(point2.getX());
+        rotate.setAngle(phi);
+
+        Rotate rotate1 = new Rotate();
+        rotate1.setPivotX(x_center);
+        rotate1.setPivotY(y_center);
+        rotate1.setAngle(phi);
+
+        Point2D new_p = rotate1.transform(new Point2D(point2.getX(), point2.getY()));
+        Point2D del_p = point2.subtract(new_p);
+
+        Point2D start = new Point2D(rectangle.getX(),rectangle.getY());
+
+        start = start.add(del_p);
+
+        rectangle.setRotate(phi + rectangle.getRotate());
+
+        rectangle.setX(start.getX());
+        rectangle.setY(start.getY());
     }
 }

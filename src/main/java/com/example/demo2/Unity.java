@@ -7,15 +7,20 @@ import javafx.scene.Group;
 import javafx.scene.Scene;
 import javafx.scene.input.KeyEvent;
 import javafx.scene.paint.Color;
+import javafx.scene.paint.Paint;
 import javafx.scene.shape.Circle;
 import javafx.scene.shape.Rectangle;
 import javafx.scene.shape.Shape;
 import javafx.scene.text.Font;
 import javafx.scene.text.Text;
+import javafx.scene.transform.Affine;
+import javafx.scene.transform.NonInvertibleTransformException;
+import javafx.scene.transform.Rotate;
 import javafx.scene.transform.Transform;
 import javafx.stage.Stage;
 
 import java.util.ArrayList;
+import java.util.Arrays;
 import java.util.List;
 
 enum BLOCKS{
@@ -41,7 +46,7 @@ public class Unity {
     final private List<Shape> shapes = new ArrayList<>();
     final double SCENE_X = 1000;
     final double SCENE_Y = 600;
-    final double TIMER = 0.1;
+    double TIMER = 0.01;
 
     /*
      * function for add objects
@@ -50,10 +55,10 @@ public class Unity {
 
 
         // add block
-        Block block = addBlock (0,0,50,50,40,new Point2D(20,0));
+        Block block = addBlock (0,0,400,150,500,new Point2D(20,0));
 
         // add platform
-        Block platform = addBlock(0,SCENE_Y-300,5000,10,20,new Point2D(0,0));
+        Block platform = addBlock(0,SCENE_Y-300,5000,30,20,new Point2D(0,0));
 
         // add text
         Text text = new Text("FF");
@@ -77,16 +82,21 @@ public class Unity {
         new AnimationTimer(){
             @Override
             public void handle(long l) {
-                blocks.get(0).run(TIMER);
-                Point2D point2 = Utility_Functions.intersects(block,platform);
-                if(point2 != null) {
-                    Circle circle = new Circle(point2.getX(),point2.getY(),2, Color.RED);
-                    block.run(-TIMER);
-                    block.physics_model.invY(-1);
-                    group.getChildren().add(circle);
-                    block.physics_model.stopPower();
-                }else{
-                    block.physics_model.startPower();
+                List<Point2D> point2 = Utility_Functions.intersects(block,platform);
+                blocks.get(0).run(TIMER,point2);
+                for (Point2D point2D : point2) {
+                    System.out.println(point2D);
+                }
+                if(point2.size() != 0) {
+                    block.run(-TIMER, point2 );
+                    for (Point2D point2D : point2) {
+                        Circle circle = new Circle(point2D.getX(),point2D.getY(),5,Color.RED);
+                        group.getChildren().addAll(circle);
+
+                        System.out.println(point2D);
+                    }
+                    block.physics_model.invY(-0.3);
+
                 }
             }
         }.start();
@@ -132,11 +142,25 @@ public class Unity {
                     }
                     case A -> {
                         Transform transform = block.getRectangle().getLocalToSceneTransform();
+                        System.out.println(transform);
                     }
                     case SPACE -> {
                         block.physics_model.invX(0);
                         block.physics_model.invY(0);
                     }
+                    case I->{
+                        Transform transform = block.getRectangle().getLocalToSceneTransform();
+                        Point2D point2D = new Point2D(100,100);
+                        System.out.println(block.getRectangle().getTranslateX());
+
+                    }
+                    case C -> {
+                        TIMER = 0;
+                    }
+                    case V->{
+                        TIMER = 0.1;
+                    }
+
                 }
             }
         });
@@ -146,7 +170,7 @@ public class Unity {
 
 
     }
-    private Block addBlock(double x,double y,double weight,double height,double mass, Point2D speed){
+    private Block addBlock(double x, double y, double weight, double height, double mass, Point2D speed){
         Block block = new Block(new Rectangle(x,y,weight,height), mass, speed);
         blocks.add(block);
         return block;

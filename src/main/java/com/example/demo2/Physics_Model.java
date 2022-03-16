@@ -3,13 +3,16 @@ package com.example.demo2;
 import javafx.geometry.Point2D;
 import javafx.scene.shape.Rectangle;
 
+import java.util.List;
+
 class Physics_Model {
 
     // final.
     public final double g = 9.806; //9.806
-    public final Point2D power_resistance = new Point2D(10, 120);
+    public final Point2D power_resistance = new Point2D(0, 0);
 
     // object.
+    private double w = 0;
     private final double mass;
     private final Rectangle rectangle;
     private Point2D V;
@@ -72,6 +75,20 @@ class Physics_Model {
         V = V1;
     }
 
+    /*
+     * get moment of inertia for rectangle
+     * */
+    private double getMomentOfInertia (){
+        return mass*(rectangle.getWidth() * rectangle.getWidth()
+                + rectangle.getHeight() *rectangle.getHeight()) /12;
+    }
+
+
+    public double getW(){
+        return w;
+    }
+
+
     public void addPower(Point2D pow) {
         power_resistance.add(pow);
     }
@@ -94,7 +111,19 @@ class Physics_Model {
      * function for changes position of object (include powers or not)
      * t[IN]: time
      * */
-    public void run(double t) {
+    public double setCollision(Point2D point2D){
+        double coefficient = 10;
+        Point2D R = Utility_Functions.CenterRectangle(rectangle).subtract(point2D);
+        System.out.println(" ---- !!! !!!!  " + w);
+        double w_new = (R.getX() * (power_resistance.getY() + g * mass) - R.getY()*power_resistance.getX())/(getMomentOfInertia()/coefficient);
+        System.out.println(w_new);
+        return w_new;
+    }
+    public void rot(){
+        rectangle.setRotate(rectangle.getRotate() + w);
+    }
+
+    public void run(double t, List<Point2D> intersection) {
 
         double V_new_x = getSpeedX(t, V.getX(), mass);
         double x_0 = rectangle.getX();
@@ -106,6 +135,28 @@ class Physics_Model {
         double y = y_0 + (V_new_y + V.getY()) * t / 2;
         rectangle.setY(y);
         V = new Point2D(V_new_x, V_new_y);
+
+
+        // work with angle // work with angle // work with angle //
+        t = Math.abs(t);
+        if(intersection != null) {
+            for (Point2D point2D : intersection) {
+                if (point2D != null) {
+                    double a_w = setCollision(point2D) ;
+                    double phi = a_w * (t * t) / 2 + w * t;
+                    System.out.println("phi  = " + phi);
+                    Utility_Functions.RotateOfPoint(point2D, rectangle, phi);
+                    w += a_w * t;// new rotate speed
+                    System.out.println(" --- w ---- : "  +w);
+
+                }
+            }
+        }else{
+            rectangle.setRotate(rectangle.getRotate() + w*t);
+        }
+
+
+
     }
 
     public void invY(double k) {
