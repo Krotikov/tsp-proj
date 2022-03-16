@@ -111,7 +111,7 @@ class Physics_Model {
      * function for changes position of object (include powers or not)
      * t[IN]: time
      * */
-    public double setCollision(Point2D point2D){
+    public double getAngularAcceleration(Point2D point2D){
         double coefficient = 10;
         Point2D R = Utility_Functions.CenterRectangle(rectangle).subtract(point2D);
         System.out.println(" ---- !!! !!!!  " + w);
@@ -142,7 +142,7 @@ class Physics_Model {
         if(intersection != null) {
             for (Point2D point2D : intersection) {
                 if (point2D != null) {
-                    double a_w = setCollision(point2D) ;
+                    double a_w = getAngularAcceleration(point2D) ;
                     double phi = a_w * (t * t) / 2 + w * t;
                     System.out.println("phi  = " + phi);
                     Utility_Functions.RotateOfPoint(point2D, rectangle, phi);
