@@ -187,6 +187,8 @@ class Utility_Functions {
         double y_center = rectangle.getBoundsInParent().getCenterY();
         double x_center = rectangle.getBoundsInParent().getCenterX();
 
+      //  rectangle.getBoundsInParent().getDepth();
+
         rotate.setPivotY(point2.getY());
         rotate.setPivotX(point2.getX());
         rotate.setAngle(phi);

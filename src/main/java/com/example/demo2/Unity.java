@@ -23,17 +23,6 @@ import java.util.ArrayList;
 import java.util.Arrays;
 import java.util.List;
 
-enum BLOCKS{
-    BLOCKS(0),
-    PLATFORM(1);
-    public final int id;
-
-    BLOCKS(int id) {
-        this.id = id;
-    }
-}
-
-
 enum SHAPES{
     TEXT(0);
     public final int id;
@@ -41,6 +30,7 @@ enum SHAPES{
         this.id = id;
     }
 }
+
 public class Unity {
     final private List<Block> blocks = new ArrayList<>();
     final private List<Shape> shapes = new ArrayList<>();
@@ -52,13 +42,11 @@ public class Unity {
      * function for add objects
      * */
     public void unObjects(){
-
-
         // add block
-        Block block = addBlock (0,0,400,150,500,new Point2D(20,0));
-
+        Block block = addBlock (0,0,150,150,500,new Point2D(20,0), Color.AQUAMARINE);
+        Block block2 = addBlock (250,100,150,150,500,new Point2D(0,0), Color.AQUAMARINE);
         // add platform
-        Block platform = addBlock(0,SCENE_Y-300,5000,30,20,new Point2D(0,0));
+        Block platform = addBlock(0,SCENE_Y-300,5000,30,20,new Point2D(0,0), Color.BLACK);
 
         // add text
         Text text = new Text("FF");
@@ -75,35 +63,37 @@ public class Unity {
         Group group = new Group();
         Scene scene = new Scene(group,SCENE_X,SCENE_Y);
 
-        Block block = blocks.get(BLOCKS.BLOCKS.id);
-        Block platform = blocks.get(BLOCKS.PLATFORM.id);
+       Block block = blocks.get(0);
 
         // while of animation
         new AnimationTimer(){
             @Override
             public void handle(long l) {
-                List<Point2D> point2 = Utility_Functions.intersects(block,platform);
-                blocks.get(0).run(TIMER,point2);
-                for (Point2D point2D : point2) {
-                    System.out.println(point2D);
-                }
-                if(point2.size() != 0) {
-                    block.run(-TIMER, point2 );
-                    for (Point2D point2D : point2) {
-                        Circle circle = new Circle(point2D.getX(),point2D.getY(),5,Color.RED);
-                        group.getChildren().addAll(circle);
+                for (int i = 0; i < blocks.size() - 1; i++) {
+                    for (int j = i + 1; j < blocks.size(); j++) {
 
-                        System.out.println(point2D);
+                        List<Point2D> point2 = Utility_Functions.intersects(blocks.get(i), blocks.get(j));
+
+                        Block block1 = blocks.get(i);
+                        block1.run(TIMER, point2);
+                        for (Point2D point2D : point2) {
+                            System.out.println(point2D);
+                        }
+                        if (point2.size() != 0) {
+                            block1.run(-TIMER, point2);
+                            for (Point2D point2D : point2) {
+                                Circle circle = new Circle(point2D.getX(), point2D.getY(), 5, Color.RED);
+                                group.getChildren().addAll(circle);
+
+                                System.out.println(point2D);
+                            }
+                            block1.physics_model.invY(-0.3);
+
+                        }
                     }
-                    block.physics_model.invY(-0.3);
-
                 }
             }
         }.start();
-
-
-
-
 
         // for testing /// // // for testing // /// //
         Text text = (Text) shapes.get(SHAPES.TEXT.id);
@@ -118,60 +108,74 @@ public class Unity {
             @Override
             public void handle(KeyEvent keyEvent) {
                 switch (keyEvent.getCode()){
-                    case UP -> block.physics_model.addY(-40);
-                    case DOWN -> block.physics_model.addY(40);
-                    case LEFT -> block.physics_model.addX(-40);
-                    case RIGHT -> block.physics_model.addX(40);
-                    case R -> {
+                    case UP: block.physics_model.addY(-40);
+                    break;
+                    case DOWN: block.physics_model.addY(40);
+                    break;
+                    case LEFT: block.physics_model.addX(-40);
+                    break;
+                    case RIGHT:block.physics_model.addX(40);
+                    break;
+                    case R: {
                         block.getRectangle().setScaleX(block.getRectangle().getScaleX() + 10);
+                        break;
                     }
-                    case Q -> {
+                    case Q: {
                         block.getRectangle().setScaleX(block.getRectangle().getScaleX() - 10);
+                        break;
                     }
-                    case U -> {
+                    case U: {
                         block.getRectangle().setRotate(block.getRectangle().getRotate() + 10);
+                        break;
 
                     }
-                    case O -> {
+                    case O: {
                         Transform transform = block.getRectangle().getLocalToParentTransform();
                         System.out.println(transform);
                         System.out.println(block.getRectangle().getX());
                         System.out.println(block.getRectangle().getX() + block.getRectangle().getWidth());
                         System.out.println(transform.transform(block.getRectangle().getX(),block.getRectangle().getY()));
                         System.out.print(transform.transform(block.getRectangle().getX() + block.getRectangle().getWidth(),block.getRectangle().getY()));
+                        break;
                     }
-                    case A -> {
+                    case A: {
                         Transform transform = block.getRectangle().getLocalToSceneTransform();
                         System.out.println(transform);
+                        break;
                     }
-                    case SPACE -> {
+                    case SPACE: {
                         block.physics_model.invX(0);
                         block.physics_model.invY(0);
+                        break;
                     }
-                    case I->{
+                    case I: {
                         Transform transform = block.getRectangle().getLocalToSceneTransform();
                         Point2D point2D = new Point2D(100,100);
                         System.out.println(block.getRectangle().getTranslateX());
+                        break;
 
                     }
-                    case C -> {
+                    case C: {
                         TIMER = 0;
                     }
-                    case V->{
+                    case V: {
                         TIMER = 0.1;
                     }
 
                 }
             }
         });
-        group.getChildren().addAll(platform.getRectangle(),block.getRectangle(),text);
+
+        group.getChildren().add(text);
+        for (Block block1 : blocks) {
+            group.getChildren().add(block1.getRectangle());
+        }
         stage.setScene(scene);
         stage.show();
-
-
     }
-    private Block addBlock(double x, double y, double weight, double height, double mass, Point2D speed){
-        Block block = new Block(new Rectangle(x,y,weight,height), mass, speed);
+    private Block addBlock(double x, double y, double width, double height, double mass, Point2D speed, Paint paint){
+        Block block = new Block(new Rectangle(x,y,width,height), mass, speed);
+        block.getRectangle().setFill(paint);
         blocks.add(block);
         return block;
     }

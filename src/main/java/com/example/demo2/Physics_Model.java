@@ -12,10 +12,12 @@ class Physics_Model {
     public final Point2D power_resistance = new Point2D(0, 0);
 
     // object.
-    private double w = 0;
-    private final double mass;
-    private final Rectangle rectangle;
-    private Point2D V;
+    public Point2D velocity;
+    public double wVelocity = 0;
+    public final Rectangle rectangle; // have pos and angular
+
+    public final double mass;
+
     private boolean stop = false;
 
 
@@ -32,6 +34,7 @@ class Physics_Model {
             a = (g * m - Math.signum(v0) * power_resistance.getY()) / m;
             return a * t + v0;
         }
+
         return v0;
     }
 
@@ -54,15 +57,15 @@ class Physics_Model {
     /*
      * V[OUT]: vector speed
      * */
-    public Point2D getV() {
-        return V;
+    public Point2D getVelocity() {
+        return velocity;
     }
 
     /*
      * set speed
      * */
-    public void setV(Point2D new_v){
-        V = new_v;
+    public void setVelocity(Point2D new_v){
+        velocity = new_v;
     }
 
     public Rectangle getRectangle() {
@@ -72,7 +75,7 @@ class Physics_Model {
     public Physics_Model(Rectangle rec, Point2D V1, double m) {
         mass = m;
         rectangle = rec;
-        V = V1;
+        velocity = V1;
     }
 
     /*
@@ -81,16 +84,6 @@ class Physics_Model {
     private double getMomentOfInertia (){
         return mass*(rectangle.getWidth() * rectangle.getWidth()
                 + rectangle.getHeight() *rectangle.getHeight()) /12;
-    }
-
-
-    public double getW(){
-        return w;
-    }
-
-
-    public void addPower(Point2D pow) {
-        power_resistance.add(pow);
     }
 
     /*
@@ -111,27 +104,24 @@ class Physics_Model {
     public double getAngularAcceleration(Point2D fulcrum){
         double coefficient = 10;
         Point2D R = Utility_Functions.CenterRectangle(rectangle).subtract(fulcrum);
-        System.out.println(" ---- !!! !!!!  " + w);
+        System.out.println(" ---- !!! !!!!  " + wVelocity);
         double w_new = (R.getX() * (power_resistance.getY() + g * mass) - R.getY()*power_resistance.getX())/(getMomentOfInertia()/coefficient);
         System.out.println(w_new);
         return w_new;
     }
-    public void rot(){
-        rectangle.setRotate(rectangle.getRotate() + w);
-    }
 
     public void run(double t, List<Point2D> intersection) {
 
-        double V_new_x = getSpeedX(t, V.getX(), mass);
+        double V_new_x = getSpeedX(t, velocity.getX(), mass);
         double x_0 = rectangle.getX();
-        double x = x_0 + (V_new_x + V.getX()) * t / 2;
+        double x = x_0 + (V_new_x + velocity.getX()) * t / 2;
         rectangle.setX(x);
 
-        double V_new_y = getSpeedY(t, V.getY(), mass);
+        double V_new_y = getSpeedY(t, velocity.getY(), mass);
         double y_0 = rectangle.getY();
-        double y = y_0 + (V_new_y + V.getY()) * t / 2;
+        double y = y_0 + (V_new_y + velocity.getY()) * t / 2;
         rectangle.setY(y);
-        V = new Point2D(V_new_x, V_new_y);
+        velocity = new Point2D(V_new_x, V_new_y);
 
 
         // work with angle // work with angle // work with angle //
@@ -140,16 +130,16 @@ class Physics_Model {
             for (Point2D point2D : intersection) {
                 if (point2D != null) {
                     double a_w = getAngularAcceleration(point2D) ;
-                    double phi = a_w * (t * t) / 2 + w * t;
+                    double phi = a_w * (t * t) / 2 + wVelocity * t;
                     System.out.println("phi  = " + phi);
                     Utility_Functions.RotateOfPoint(point2D, rectangle, phi);
-                    w += a_w * t;// new rotate speed
-                    System.out.println(" --- w ---- : "  +w);
+                    wVelocity += a_w * t;// new rotate speed
+                    System.out.println(" --- w ---- : "  + wVelocity);
 
                 }
             }
         }else{
-            rectangle.setRotate(rectangle.getRotate() + w*t);
+            rectangle.setRotate(rectangle.getRotate() + wVelocity *t);
         }
 
 
@@ -157,18 +147,18 @@ class Physics_Model {
     }
 
     public void invY(double k) {
-        V = new Point2D(V.getX(), k * V.getY());
+        velocity = new Point2D(velocity.getX(), k * velocity.getY());
     }
 
     public void invX(double k) {
-        V = new Point2D(k * V.getX(), V.getY());
+        velocity = new Point2D(k * velocity.getX(), velocity.getY());
     }
 
     public void addX(double x) {
-        V = new Point2D(V.getX() + x, V.getY());
+        velocity = new Point2D(velocity.getX() + x, velocity.getY());
     }
 
     public void addY(double y) {
-        V = new Point2D(V.getX(), V.getY() + y);
+        velocity = new Point2D(velocity.getX(), velocity.getY() + y);
     }
 }
