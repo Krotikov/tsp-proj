@@ -13,7 +13,7 @@ public class main extends Application {
         unity.unObjects();
         unity.RUN(stage);
     }
-    public static void main(String[] args) {;
+    public static void main(String[] args) {
         launch();
     }
 }
