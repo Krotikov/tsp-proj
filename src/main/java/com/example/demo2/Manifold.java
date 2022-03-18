@@ -16,10 +16,15 @@ public class Manifold {
     }
 
     private void solveCollision(){ // Generate contact information
-        contacts = Utility_Functions.intersects(A, B);;
+        contacts = Utility_Functions.intersects(A, B);
         List<UserPair> PointsMapA = Utility_Functions.getIntersectsPointListOnePoint(contacts,A);
         List<UserPair> PointsMapB = Utility_Functions.getIntersectsPointListOnePoint(contacts,B);
-        List<Point2D> Points = Utility_Functions.IntersectsPoints(A,B);
+        List<Point2D> Points = Utility_Functions.IntersectsPoints(A, B);
+
+        System.out.println(Points);
+        System.out.println(PointsMapA);
+        System.out.println(PointsMapB);
+
         if(PointsMapA != null && PointsMapA.size() != 0 && PointsMapB != null && PointsMapB.size() != 0){
             // относительно блока А
             Point2D A = PointsMapA.get(0).getKEY1();
@@ -58,7 +63,7 @@ public class Manifold {
                 depth = depth1;
             }
             normal = nrml.normalize();
-            normal = normal.multiply(-1);
+           // normal = normal.multiply(-1);
             displacement = depth;
 
         }else if(PointsMapA != null && PointsMapA.size() == 1) {
@@ -80,7 +85,7 @@ public class Manifold {
             normal = AC.NormalVec(D).normalize();
             displacement = AC.DistanceVecPoint(D);
             System.out.println(normal);
-        }else if (PointsMapA != null && PointsMapA.size() == 2 && Points.size() == 2){
+        }else if (Points.size() == 2){
             Point2D A = Points.get(0);
             Point2D B = Points.get(1);
             Vec2 AB = new Vec2(A,B);
@@ -89,8 +94,11 @@ public class Manifold {
             Point2D D = contacts.get(1);
             Point2D CD = C.add(D).multiply(0.5);
             normal = AB.NormalVec(CD).normalize();
-            displacement = AB.lengthVec();
+            displacement = AB.DistanceVecPoint(C);
+            normal = normal.multiply(-1.0);
         }
+
+        System.out.println(displacement);
     }
 
     public void applyImpulse(){  // solve impulse
@@ -140,10 +148,8 @@ public class Manifold {
         Point2D dist = normal.multiply(tempCalc);
 
         // исправляем позиции
-        A.getRectangle().setX(A.getRectangle().getX() - dist.multiply(iMassA).getX());
-        A.getRectangle().setY(A.getRectangle().getY() - dist.multiply(iMassA).getY());
-        B.getRectangle().setX(B.getRectangle().getX() + dist.multiply(iMassB).getX());
-        B.getRectangle().setY(B.getRectangle().getY() + dist.multiply(iMassB).getY());
+        A.physics_model.setPosition(new Point2D(A.getRectangle().getX() - dist.multiply(iMassA).getX(), A.getRectangle().getY() - dist.multiply(iMassA).getY()));
+        B.physics_model.setPosition(new Point2D(B.getRectangle().getX() - dist.multiply(iMassB).getX(), B.getRectangle().getY() - dist.multiply(iMassB).getY()));
     }
 
     private Point2D getResultSpeed(final Point2D RA, final Point2D RB){
@@ -152,7 +158,6 @@ public class Manifold {
 
         return tempB.subtract(tempA);
     }
-
 
     public Point2D normal;           // From A to B
     public List<Point2D> contacts;
