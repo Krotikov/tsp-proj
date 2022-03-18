@@ -150,7 +150,6 @@ class Utility_Functions {
     private static final List<Block> blocks = new ArrayList<>();
     private static final long MOD = 100000000000L;
 
-
     /*
      * point of intersect vector's
      * */

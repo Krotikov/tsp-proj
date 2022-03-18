@@ -15,7 +15,6 @@ public class Manifold {
         solveCollision();
     }
 
-
     private void solveCollision(){ // Generate contact information
         contacts = Utility_Functions.intersects(A, B);;
         List<UserPair> PointsMapA = Utility_Functions.getIntersectsPointListOnePoint(contacts,A);
