@@ -34,6 +34,7 @@ enum SHAPES{
 public class Unity {
     final private List<Block> blocks = new ArrayList<>();
     final private List<Shape> shapes = new ArrayList<>();
+    final private List<Manifold> contacts = new ArrayList<>();
     final double SCENE_X = 1000;
     final double SCENE_Y = 600;
     double TIMER = 0.01;
@@ -44,10 +45,10 @@ public class Unity {
     public void unObjects(){
         // add block
         Block block = addBlock (0,0,150,150,500,new Point2D(20,0), Color.AQUAMARINE);
-        Block block2 = addBlock (250,100,150,150,500,new Point2D(0,0), Color.AQUAMARINE);
+        //Block block2 = addBlock (250,100,150,150,500,new Point2D(0,0), Color.AQUAMARINE);
         // add platform
-        Block platform = addBlock(0,SCENE_Y-300,5000,30,20,new Point2D(0,0), Color.BLACK);
-
+        Block platform = addBlock(0,SCENE_Y-300,5000,30,200000,new Point2D(0,0), Color.BLACK);
+        platform.physics_model.stopPower();
         // add text
         Text text = new Text("FF");
         text.setFont(new Font(30));
@@ -72,23 +73,21 @@ public class Unity {
                 for (int i = 0; i < blocks.size() - 1; i++) {
                     for (int j = i + 1; j < blocks.size(); j++) {
 
-                        List<Point2D> point2 = Utility_Functions.intersects(blocks.get(i), blocks.get(j));
-
-                        Block block1 = blocks.get(i);
-                        block1.run(TIMER, point2);
-                        for (Point2D point2D : point2) {
-                            System.out.println(point2D);
+                        if (blocks.get(i).getRectangle().getBoundsInParent().intersects(blocks.get(j).getRectangle().getBoundsInParent())){
+                            Manifold manifold = new Manifold(blocks.get(i), blocks.get(j));
+                            System.out.println(manifold.normal);
+                            manifold.applyImpulse();
+                            manifold.posCorrection();
                         }
-                        if (point2.size() != 0) {
-                            block1.run(-TIMER, point2);
+
+                        List<Point2D> point2 = blocks.get(i).physics_model.contacts;
+                        blocks.get(i).run(TIMER);
+
+                        if (point2 != null) {
                             for (Point2D point2D : point2) {
                                 Circle circle = new Circle(point2D.getX(), point2D.getY(), 5, Color.RED);
                                 group.getChildren().addAll(circle);
-
-                                System.out.println(point2D);
                             }
-                            block1.physics_model.invY(-0.3);
-
                         }
                     }
                 }
@@ -157,9 +156,11 @@ public class Unity {
                     }
                     case C: {
                         TIMER = 0;
+                        break;
                     }
                     case V: {
-                        TIMER = 0.1;
+                        TIMER = 0.01;
+                        break;
                     }
 
                 }
