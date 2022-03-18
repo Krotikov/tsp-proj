@@ -17,6 +17,7 @@ class Physics_Model {
     public final Rectangle rectangle; // have pos and angular
 
     public final double mass;
+    public final double inertia;
 
     private boolean stop = false;
 
@@ -76,6 +77,7 @@ class Physics_Model {
         mass = m;
         rectangle = rec;
         velocity = V1;
+        inertia = getMomentOfInertia();
     }
 
     /*
@@ -86,6 +88,13 @@ class Physics_Model {
                 + rectangle.getHeight() *rectangle.getHeight()) /12;
     }
 
+    /*
+    * apply the previously calculated momentum to the body
+    * */
+    public void applyImpulse(final Point2D impulse, final Point2D vec){
+        velocity.add(impulse.multiply(1.0 / mass));
+        wVelocity += 1.0 / inertia * (vec.getX() * impulse.getY() - vec.getY() * impulse.getX());
+    }
     /*
      * Uniform movement
      * */
@@ -105,7 +114,7 @@ class Physics_Model {
         double coefficient = 10;
         Point2D R = Utility_Functions.CenterRectangle(rectangle).subtract(fulcrum);
         System.out.println(" ---- !!! !!!!  " + wVelocity);
-        double w_new = (R.getX() * (power_resistance.getY() + g * mass) - R.getY()*power_resistance.getX())/(getMomentOfInertia()/coefficient);
+        double w_new = (R.getX() * (power_resistance.getY() + g * mass) - R.getY() * power_resistance.getX()) / (inertia/coefficient);
         System.out.println(w_new);
         return w_new;
     }
