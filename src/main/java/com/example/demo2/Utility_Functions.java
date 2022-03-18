@@ -52,11 +52,8 @@ class Block{
 }
 
 
-
-
 class Utility_Functions {
     private static final List<Block> blocks = new ArrayList<>();
-
 
     /*
      * point of intersect vector's
@@ -209,5 +206,9 @@ class Utility_Functions {
 
         rectangle.setX(start.getX());
         rectangle.setY(start.getY());
+    }
+
+    public static Point2D Cross(double c, final Point2D v){
+        return new Point2D(-c * v.getY(), c * v.getX());
     }
 }
