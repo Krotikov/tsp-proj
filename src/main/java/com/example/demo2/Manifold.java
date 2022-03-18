@@ -16,7 +16,81 @@ public class Manifold {
     }
 
     private void solveCollision(){ // Generate contact information
+        contacts = Utility_Functions.intersects(A, B);;
+        List<UserPair> PointsMapA = Utility_Functions.getIntersectsPointListOnePoint(contacts,A);
+        List<UserPair> PointsMapB = Utility_Functions.getIntersectsPointListOnePoint(contacts,B);
+        List<Point2D> Points = Utility_Functions.IntersectsPoints(A,B);
+        if(PointsMapA != null && PointsMapA.size() != 0 && PointsMapB != null && PointsMapB.size() != 0){
+            // относительно блока А
+            Point2D A = PointsMapA.get(0).getKEY1();
+            Point2D B = PointsMapB.get(0).getKEY1();
+            Point2D C = PointsMapA.get(0).getVALUE1();
+            Point2D K = PointsMapA.get(0).getVALUE2();
+            Vec2 CB = new Vec2(C,B);
+            Vec2 KB = new Vec2(C,B);
+            CB.calculate();
+            KB.calculate();
+            Point2D normal1 = CB.NormalVec(A);
+            Point2D normal2 = CB.NormalVec(K);
+            double depth1 = CB.DistanceVecPoint(A);
+            double depth2 = CB.DistanceVecPoint(K);
+            if(Math.abs(normal1.getY()) < Math.abs(normal2.getY()) ){
+                normal1 = normal2;
+                depth1 = depth2;
+            }
 
+            Point2D normal11 = KB.NormalVec(A);
+            Point2D normal12 = KB.NormalVec(C);
+            double depth11 = KB.DistanceVecPoint(A);
+            double depth12 = KB.DistanceVecPoint(C);
+
+            if(Math.abs(normal11.getY()) < Math.abs(normal12.getY()) ){
+                normal11 = normal12;
+                depth11 = depth12;
+            }
+            Point2D nrml;
+            double depth;
+            if(Math.abs(normal11.getY()) < Math.abs(normal1.getY()) ){
+                nrml = normal11;
+                depth = depth11;
+            }else{
+                nrml = normal1;
+                depth = depth1;
+            }
+            normal = nrml.normalize();
+            normal = normal.multiply(-1);
+            displacement = depth;
+
+        }else if(PointsMapA != null && PointsMapA.size() == 1) {
+            // относительно первого рассматриваем
+            Point2D B = PointsMapA.get(0).getKEY1();
+            Point2D A = PointsMapA.get(0).getVALUE1();
+            Point2D C = PointsMapA.get(0).getVALUE2();
+            Vec2 AC = new Vec2(A, C);
+            AC.calculate();
+            normal = AC.NormalVec(B).normalize();
+            displacement = AC.DistanceVecPoint(B);
+        }else if(PointsMapB != null && PointsMapB.size() == 1) {
+            // относительно
+            Point2D D = PointsMapB.get(0).getKEY1();
+            Point2D A = PointsMapB.get(0).getVALUE1();
+            Point2D C = PointsMapB.get(0).getVALUE2();
+            Vec2 AC = new Vec2(A,C);
+            AC.calculate();
+            normal = AC.NormalVec(D).normalize();
+            displacement = AC.DistanceVecPoint(D);
+            System.out.println(normal);
+        }else if (PointsMapA != null && PointsMapA.size() == 2 && Points.size() == 2){
+            Point2D A = Points.get(0);
+            Point2D B = Points.get(1);
+            Vec2 AB = new Vec2(A,B);
+            AB.calculate();
+            Point2D C = contacts.get(0);
+            Point2D D = contacts.get(1);
+            Point2D CD = C.add(D).multiply(0.5);
+            normal = AB.NormalVec(CD).normalize();
+            displacement = AB.lengthVec();
+        }
     }
 
     public void applyImpulse(){  // solve impulse
