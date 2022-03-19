@@ -140,8 +140,8 @@ class Block{
     public Rectangle getRectangle() {
         return physics_model.getRectangle();
     }
-    public void run(double t,List<Point2D>intersection){
-        physics_model.run(t, intersection);
+    public void run(double t){
+        physics_model.run(t);
     }
 }
 
@@ -149,7 +149,6 @@ class Block{
 class Utility_Functions {
     private static final List<Block> blocks = new ArrayList<>();
     private static final long MOD = 100000000000L;
-
 
     /*
      * point of intersect vector's
@@ -371,6 +370,8 @@ class Utility_Functions {
                 }
             }
         }
+
+        block1.physics_model.contacts = point2DS;
         return point2DS;
     }
 

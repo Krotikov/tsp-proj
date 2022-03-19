@@ -19,6 +19,8 @@ class Physics_Model {
     public final double mass;
     public final double inertia;
 
+    public List<Point2D> contacts;
+
     private boolean stop = false;
 
 
@@ -30,15 +32,9 @@ class Physics_Model {
      * returns the speed on the y-axis (including forces)
      * */
     public double getSpeedY(double t, double v0, double m) {
-        double a = 0;
-        if (!stop) {
-            a = (g * m - Math.signum(v0) * power_resistance.getY()) / m;
-            return a * t + v0;
-        }
-
-        return v0;
+        double a = (g * m - Math.signum(v0) * power_resistance.getY()) / m;
+        return a * t + v0;
     }
-
     /*
      * t[IN]: time
      * v0[IN]: start speed
@@ -47,26 +43,9 @@ class Physics_Model {
      * returns the speed on the x-axis (including forces)
      * */
     public double getSpeedX(double t, double v0, double m) {
-        double a = 0;
-        if (!stop) {
-            a = power_resistance.getX() / m;
-            return a * t + v0;
-        }
-        return v0;
-    }
 
-    /*
-     * V[OUT]: vector speed
-     * */
-    public Point2D getVelocity() {
-        return velocity;
-    }
-
-    /*
-     * set speed
-     * */
-    public void setVelocity(Point2D new_v){
-        velocity = new_v;
+        double a = power_resistance.getX() / m;
+        return a * t + v0;
     }
 
     public Rectangle getRectangle() {
@@ -98,6 +77,13 @@ class Physics_Model {
     /*
      * Uniform movement
      * */
+
+    public void setPosition(Point2D pos){
+        if (!stop) {
+            rectangle.setX(pos.getX());
+            rectangle.setY(pos.getY());
+        }
+    }
     public void stopPower() {
         stop = true;
     }
@@ -113,46 +99,42 @@ class Physics_Model {
     public double getAngularAcceleration(Point2D fulcrum){
         double coefficient = 10;
         Point2D R = Utility_Functions.CenterRectangle(rectangle).subtract(fulcrum);
-        System.out.println(" ---- !!! !!!!  " + wVelocity);
         double w_new = (R.getX() * (power_resistance.getY() + g * mass) - R.getY() * power_resistance.getX()) / (inertia/coefficient);
-        System.out.println(w_new);
+
         return w_new;
     }
 
-    public void run(double t, List<Point2D> intersection) {
+    public void run(double t) {
+        if (!stop) {
+            double V_new_x = getSpeedX(t, velocity.getX(), mass);
+            double x_0 = rectangle.getX();
+            double x = x_0 + (V_new_x + velocity.getX()) * t / 2;
+            rectangle.setX(x);
 
-        double V_new_x = getSpeedX(t, velocity.getX(), mass);
-        double x_0 = rectangle.getX();
-        double x = x_0 + (V_new_x + velocity.getX()) * t / 2;
-        rectangle.setX(x);
-
-        double V_new_y = getSpeedY(t, velocity.getY(), mass);
-        double y_0 = rectangle.getY();
-        double y = y_0 + (V_new_y + velocity.getY()) * t / 2;
-        rectangle.setY(y);
-        velocity = new Point2D(V_new_x, V_new_y);
+            double V_new_y = getSpeedY(t, velocity.getY(), mass);
+            double y_0 = rectangle.getY();
+            double y = y_0 + (V_new_y + velocity.getY()) * t / 2;
+            rectangle.setY(y);
+            velocity = new Point2D(V_new_x, V_new_y);
 
 
-        // work with angle // work with angle // work with angle //
-        t = Math.abs(t);
-        if(intersection != null) {
-            for (Point2D point2D : intersection) {
-                if (point2D != null) {
-                    double a_w = getAngularAcceleration(point2D) ;
-                    double phi = a_w * (t * t) / 2 + wVelocity * t;
-                    System.out.println("phi  = " + phi);
-                    Utility_Functions.RotateOfPoint(point2D, rectangle, phi);
-                    wVelocity += a_w * t;// new rotate speed
-                    System.out.println(" --- w ---- : "  + wVelocity);
-
+            // work with angle // work with angle // work with angle //
+            t = Math.abs(t);
+            if (contacts != null) {
+                for (Point2D point2D : contacts) {
+                    if (point2D != null) {
+                        double a_w = getAngularAcceleration(point2D);
+                        double phi = a_w * (t * t) / 2 + wVelocity * t;
+                        Utility_Functions.RotateOfPoint(point2D, rectangle, phi);
+                        wVelocity += a_w * t;// new rotate speed
+                    }
                 }
+            } else if (!stop) {
+                rectangle.setRotate(rectangle.getRotate() + wVelocity * t);
             }
-        }else{
-            rectangle.setRotate(rectangle.getRotate() + wVelocity *t);
+
+            contacts = null;
         }
-
-
-
     }
 
     public void invY(double k) {
