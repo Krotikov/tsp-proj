@@ -99,9 +99,8 @@ class Physics_Model {
     public double getAngularAcceleration(Point2D fulcrum){
         double coefficient = 10;
         Point2D R = Utility_Functions.CenterRectangle(rectangle).subtract(fulcrum);
-        double w_new = (R.getX() * (power_resistance.getY() + g * mass) - R.getY() * power_resistance.getX()) / (inertia/coefficient);
 
-        return w_new;
+        return (R.getX() * (power_resistance.getY() + g * mass) - R.getY() * power_resistance.getX()) / (inertia/coefficient);
     }
 
     public void run(double t) {
@@ -119,8 +118,7 @@ class Physics_Model {
 
 
             // work with angle // work with angle // work with angle //
-            t = Math.abs(t);
-            if (contacts != null) {
+            if (contacts != null && false) {
                 for (Point2D point2D : contacts) {
                     if (point2D != null) {
                         double a_w = getAngularAcceleration(point2D);
@@ -129,7 +127,8 @@ class Physics_Model {
                         wVelocity += a_w * t;// new rotate speed
                     }
                 }
-            } else if (!stop) {
+            }
+            else if(false){
                 rectangle.setRotate(rectangle.getRotate() + wVelocity * t);
             }
 

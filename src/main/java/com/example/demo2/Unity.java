@@ -37,7 +37,7 @@ public class Unity {
     final private List<Manifold> contacts = new ArrayList<>();
     final double SCENE_X = 1000;
     final double SCENE_Y = 600;
-    double TIMER = 0.01;
+    double TIMER = 0.05 ;
 
     /*
      * function for add objects
@@ -45,9 +45,9 @@ public class Unity {
     public void unObjects(){
         // add block
         Block block = addBlock (0,0,150,150,500,new Point2D(20,0), Color.AQUAMARINE);
-        //Block block2 = addBlock (250,100,150,150,500,new Point2D(0,0), Color.AQUAMARINE);
+        // Block block2 = addBlock (400,100,150,150,500,new Point2D(0,0), Color.AQUAMARINE);
         // add platform
-        Block platform = addBlock(0,SCENE_Y-300,5000,30,200000,new Point2D(0,0), Color.BLACK);
+        Block platform = addBlock(100,SCENE_Y-300,5000,200,202000000,new Point2D(0,0), Color.BLACK);
         platform.physics_model.stopPower();
         // add text
         Text text = new Text("FF");
@@ -70,23 +70,24 @@ public class Unity {
         new AnimationTimer(){
             @Override
             public void handle(long l) {
-                for (int i = 0; i < blocks.size() - 1; i++) {
-                    for (int j = i + 1; j < blocks.size(); j++) {
+                if(TIMER != 0) {
+                    for (int i = 0; i < blocks.size() - 1; i++) {
+                        for (int j = i + 1; j < blocks.size(); j++) {
 
-                        if (blocks.get(i).getRectangle().getBoundsInParent().intersects(blocks.get(j).getRectangle().getBoundsInParent())){
-                            Manifold manifold = new Manifold(blocks.get(i), blocks.get(j));
-                            System.out.println(manifold.normal);
-                            manifold.applyImpulse();
-                            manifold.posCorrection();
-                        }
+                            if (blocks.get(i).getRectangle().getBoundsInParent().intersects(blocks.get(j).getRectangle().getBoundsInParent())) {
+                                Manifold manifold = new Manifold(blocks.get(i), blocks.get(j));
+                                manifold.applyImpulse();
+                                manifold.posCorrection();
+                            }
 
-                        List<Point2D> point2 = blocks.get(i).physics_model.contacts;
-                        blocks.get(i).run(TIMER);
+                            List<Point2D> point2 = blocks.get(i).physics_model.contacts;
+                            blocks.get(i).run(TIMER);
 
-                        if (point2 != null) {
-                            for (Point2D point2D : point2) {
-                                Circle circle = new Circle(point2D.getX(), point2D.getY(), 5, Color.RED);
-                                group.getChildren().addAll(circle);
+                            if (point2 != null) {
+                                for (Point2D point2D : point2) {
+                                    Circle circle = new Circle(point2D.getX(), point2D.getY(), 5, Color.RED);
+                                    group.getChildren().addAll(circle);
+                                }
                             }
                         }
                     }
@@ -106,63 +107,49 @@ public class Unity {
         scene.setOnKeyPressed(new EventHandler<KeyEvent>() {
             @Override
             public void handle(KeyEvent keyEvent) {
-                switch (keyEvent.getCode()){
-                    case UP: block.physics_model.addY(-40);
-                    break;
-                    case DOWN: block.physics_model.addY(40);
-                    break;
-                    case LEFT: block.physics_model.addX(-40);
-                    break;
-                    case RIGHT:block.physics_model.addX(40);
-                    break;
-                    case R: {
+                switch (keyEvent.getCode()) {
+                    case UP -> block.physics_model.addY(-40);
+                    case DOWN -> block.physics_model.addY(40);
+                    case LEFT -> block.physics_model.addX(-40);
+                    case RIGHT -> block.physics_model.addX(40);
+                    case R -> {
                         block.getRectangle().setScaleX(block.getRectangle().getScaleX() + 10);
-                        break;
                     }
-                    case Q: {
+                    case Q -> {
                         block.getRectangle().setScaleX(block.getRectangle().getScaleX() - 10);
-                        break;
                     }
-                    case U: {
+                    case U -> {
                         block.getRectangle().setRotate(block.getRectangle().getRotate() + 10);
-                        break;
 
                     }
-                    case O: {
+                    case O -> {
                         Transform transform = block.getRectangle().getLocalToParentTransform();
                         System.out.println(transform);
                         System.out.println(block.getRectangle().getX());
                         System.out.println(block.getRectangle().getX() + block.getRectangle().getWidth());
-                        System.out.println(transform.transform(block.getRectangle().getX(),block.getRectangle().getY()));
-                        System.out.print(transform.transform(block.getRectangle().getX() + block.getRectangle().getWidth(),block.getRectangle().getY()));
-                        break;
+                        System.out.println(transform.transform(block.getRectangle().getX(), block.getRectangle().getY()));
+                        System.out.print(transform.transform(block.getRectangle().getX() + block.getRectangle().getWidth(), block.getRectangle().getY()));
                     }
-                    case A: {
+                    case A -> {
                         Transform transform = block.getRectangle().getLocalToSceneTransform();
                         System.out.println(transform);
-                        break;
                     }
-                    case SPACE: {
+                    case SPACE -> {
                         block.physics_model.invX(0);
                         block.physics_model.invY(0);
-                        break;
                     }
-                    case I: {
+                    case I -> {
                         Transform transform = block.getRectangle().getLocalToSceneTransform();
-                        Point2D point2D = new Point2D(100,100);
+                        Point2D point2D = new Point2D(100, 100);
                         System.out.println(block.getRectangle().getTranslateX());
-                        break;
 
                     }
-                    case C: {
+                    case C -> {
                         TIMER = 0;
-                        break;
                     }
-                    case V: {
+                    case V -> {
                         TIMER = 0.01;
-                        break;
                     }
-
                 }
             }
         });
@@ -171,6 +158,7 @@ public class Unity {
         for (Block block1 : blocks) {
             group.getChildren().add(block1.getRectangle());
         }
+        block.getRectangle().toFront();
         stage.setScene(scene);
         stage.show();
     }

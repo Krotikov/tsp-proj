@@ -134,8 +134,21 @@ class Vec2{
 }
 class Block{
     public final Physics_Model physics_model;
+    private final List<Point2D>normals = new ArrayList<>();
     Block(Rectangle rc, double m, Point2D V0){
         physics_model = new Physics_Model(rc,V0, m);
+        normals.add(new Point2D(-1,0));
+        normals.add(new Point2D(0,-1));
+        normals.add(new Point2D(1,0));
+        normals.add(new Point2D(0,1));
+    }
+    public List<Point2D> getNormals(){
+        Transform transform = getRectangle().getLocalToParentTransform();
+        List<Point2D> normals_ = this.normals;
+        for(int i = 0;i < normals_.size();i++){
+            normals_.set(i, transform.transform(normals_.get(i)).normalize());
+        }
+        return normals_;
     }
     public Rectangle getRectangle() {
         return physics_model.getRectangle();
@@ -326,10 +339,8 @@ class Utility_Functions {
         point2 = transform.transform(point2);
 
         // верхняя линия
-        Points.add(point1);
         Points.add(point2);
-
-
+        Points.add(point1);
 
         return Points;
     }
