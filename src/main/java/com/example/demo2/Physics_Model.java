@@ -71,7 +71,7 @@ class Physics_Model {
     * apply the previously calculated momentum to the body
     * */
     public void applyImpulse(final Point2D impulse, final Point2D vec){
-        velocity.add(impulse.multiply(1.0 / mass));
+        velocity = velocity.add(impulse.multiply(1.0 / mass));
         wVelocity += 1.0 / inertia * (vec.getX() * impulse.getY() - vec.getY() * impulse.getX());
     }
     /*
@@ -97,7 +97,7 @@ class Physics_Model {
 
 
     public double getAngularAcceleration(Point2D fulcrum){
-        double coefficient = 10;
+        double coefficient = 1;
         Point2D R = Utility_Functions.CenterRectangle(rectangle).subtract(fulcrum);
 
         return (R.getX() * (power_resistance.getY() + g * mass) - R.getY() * power_resistance.getX()) / (inertia/coefficient);
@@ -118,7 +118,7 @@ class Physics_Model {
 
 
             // work with angle // work with angle // work with angle //
-            if (contacts != null && false) {
+            if (contacts != null) {
                 for (Point2D point2D : contacts) {
                     if (point2D != null) {
                         double a_w = getAngularAcceleration(point2D);
@@ -128,12 +128,13 @@ class Physics_Model {
                     }
                 }
             }
-            else if(false){
-                rectangle.setRotate(rectangle.getRotate() + wVelocity * t);
+            else {
+                    rectangle.setRotate(rectangle.getRotate() + wVelocity * t);
+                }
+
+                contacts = null;
             }
 
-            contacts = null;
-        }
     }
 
     public void invY(double k) {

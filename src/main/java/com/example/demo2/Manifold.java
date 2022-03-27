@@ -17,33 +17,24 @@ public class Manifold {
     }
 
     private void solveCollision(){ // Generate contact information
+        //contacts = Utility_Functions.IntersectsPoints(A,B);
         contacts = Utility_Functions.intersects(A, B);
         Pair<Double,Point2D> length_and_normal1 = FindAxisLeastPenetration(A,B);
         Pair<Double,Point2D> length_and_normal2 = FindAxisLeastPenetration(B,A);
 
-        if(length_and_normal1.getKey() < 0 && length_and_normal2.getKey() < 0) {
-            if (length_and_normal1.getKey() > length_and_normal2.getKey()) {
-                normal = length_and_normal1.getValue();
-                displacement = length_and_normal1.getKey();
-            } else {
-                normal = length_and_normal2.getValue();
-                displacement = length_and_normal2.getKey();
-            }
-        }else if (length_and_normal1.getKey() < 0){
 
+        // choose max deep
+        if (length_and_normal1.getKey() > length_and_normal2.getKey()) {
             normal = length_and_normal1.getValue();
             displacement = length_and_normal1.getKey();
-
-        }else if(length_and_normal2.getKey() < 0){
-
+        }
+        else {
             normal = length_and_normal2.getValue();
             displacement = length_and_normal2.getKey();
+            normal = normal.multiply(-1);
 
         }
-        normal= normal.multiply(-1);
         displacement = -displacement;
-        System.out.println(normal);
-        System.out.println(displacement);
     }
 
     /*
@@ -54,8 +45,9 @@ public class Manifold {
         List<Point2D> pointsA = Utility_Functions.getPoints(blockA);
         List<Point2D> pointsB = Utility_Functions.getPoints(blockB);
 
-        short BestIndex = 0;
+        short BestIndex = -1;
         double BestDistance = -Double.POSITIVE_INFINITY;
+        double dist;
 
         for(short i =0;i < normals.size();i++){
             //  получаем нормаль
@@ -67,7 +59,7 @@ public class Manifold {
             // вершина на ребре блока A
             Point2D v = pointsA.get(i);
 
-            double dist = normal.dotProduct(s.subtract(v));
+            dist = normal.dotProduct(s.subtract(v));
 
 
             // наибольшее расстояние
@@ -138,7 +130,7 @@ public class Manifold {
 
     // correcting position after collision and impulse applying (Применять при необходимости)
     public void posCorrection(){
-        final double percent = 0.4; // [0.2; 0.8] to correction pos
+        final double percent = 1; // [0.2; 0.8] to correction pos
         final double slop = 0.01;   // [0.01; 0.1] our epsilon
         final double iMassA =  1.0 / A.physics_model.mass;
         final double iMassB =  1.0 / B.physics_model.mass;

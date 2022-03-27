@@ -37,7 +37,7 @@ public class Unity {
     final private List<Manifold> contacts = new ArrayList<>();
     final double SCENE_X = 1000;
     final double SCENE_Y = 600;
-    double TIMER = 0.05 ;
+    double TIMER = 1.0/30.0 ;
 
     /*
      * function for add objects
@@ -45,9 +45,9 @@ public class Unity {
     public void unObjects(){
         // add block
         Block block = addBlock (0,0,150,150,500,new Point2D(20,0), Color.AQUAMARINE);
-        // Block block2 = addBlock (400,100,150,150,500,new Point2D(0,0), Color.AQUAMARINE);
+        //Block block2 = addBlock (400,100,150,150,234,new Point2D(0,0), Color.AQUAMARINE);
         // add platform
-        Block platform = addBlock(100,SCENE_Y-300,5000,200,202000000,new Point2D(0,0), Color.BLACK);
+        Block platform = addBlock(-400,SCENE_Y-300,5000,200,202000000,new Point2D(0,0), Color.BLACK);
         platform.physics_model.stopPower();
         // add text
         Text text = new Text("FF");
@@ -74,23 +74,27 @@ public class Unity {
                     for (int i = 0; i < blocks.size() - 1; i++) {
                         for (int j = i + 1; j < blocks.size(); j++) {
 
+                            Manifold manifold = new Manifold(blocks.get(i), blocks.get(j));
                             if (blocks.get(i).getRectangle().getBoundsInParent().intersects(blocks.get(j).getRectangle().getBoundsInParent())) {
-                                Manifold manifold = new Manifold(blocks.get(i), blocks.get(j));
-                                manifold.applyImpulse();
-                                manifold.posCorrection();
+                                    manifold.applyImpulse();
+                                    manifold.posCorrection();
+
                             }
 
                             List<Point2D> point2 = blocks.get(i).physics_model.contacts;
-                            blocks.get(i).run(TIMER);
+
 
                             if (point2 != null) {
                                 for (Point2D point2D : point2) {
-                                    Circle circle = new Circle(point2D.getX(), point2D.getY(), 5, Color.RED);
+                                    Circle circle = new Circle(point2D.getX(), point2D.getY(), 2, Color.RED);
                                     group.getChildren().addAll(circle);
                                 }
                             }
+                            blocks.get(i).run(TIMER);
                         }
                     }
+
+
                 }
             }
         }.start();
@@ -146,9 +150,10 @@ public class Unity {
                     }
                     case C -> {
                         TIMER = 0;
+
                     }
                     case V -> {
-                        TIMER = 0.01;
+                        TIMER = 1.0/30.0;
                     }
                 }
             }
