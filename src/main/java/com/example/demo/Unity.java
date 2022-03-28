@@ -44,13 +44,7 @@ public class Unity {
         // add block
         Block block = addBlock (0,0,150,150,100,new Point2D(20,0), Color.AQUAMARINE);
 
-        Block block2 = addBlock (0,0,150,500,200000000,new Point2D(0,0), Color.GREEN);
-        block2.physics_model.stopPower();
-
-        Block block3 = addBlock (700,0,150,500,2000000000,new Point2D(0,0), Color.GREEN);
-        block3.physics_model.stopPower();
-
-        // Block block3 = addBlock (700,0,50,50,1000,new Point2D(0,0), Color.SANDYBROWN);
+        Block block3 = addBlock (700,0,50,50,1000,new Point2D(0,0), Color.SANDYBROWN);
         //  add platform
         Block platform = addBlock(-1000,SCENE_Y-300,5000,200,202000000,new Point2D(0,0), Color.BLACK);
         platform.physics_model.stopPower();
@@ -84,21 +78,18 @@ public class Unity {
                         for (int j = i + 1; j < blocks.size(); j++) {
 
                             blocks.get(i).run(TIMER);
+                            List<Point2D> point2 = null;
                             if (blocks.get(i).getRectangle().getBoundsInParent().intersects(blocks.get(j).getRectangle().getBoundsInParent())) {
                                     Manifold manifold = new Manifold(blocks.get(i), blocks.get(j));
+                                    point2 = manifold.contacts;
                                     System.out.println(manifold.displacement);
                                     System.out.println(manifold.normal);
                                     manifold.applyImpulse();
-
                                     manifold.testPosCorr();
 
                                 //manifold.posCorrection();
 
                             }
-
-                            List<Point2D> point2 = blocks.get(i).physics_model.contacts;
-
-
                             if (point2 != null) {
                                 for (Point2D point2D : point2) {
                                     Circle circle = new Circle(point2D.getX(), point2D.getY(), 5, Color.RED);
