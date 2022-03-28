@@ -132,7 +132,7 @@ public class Physics_Model {
             else {
                     rectangle.setRotate(rectangle.getRotate() + wVelocity * t);
                 }
-
+                rectangle.setRotate(rectangle.getRotate() + wVelocity * t);
                 contacts = null;
             }
 

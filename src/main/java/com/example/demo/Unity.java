@@ -13,9 +13,11 @@ import javafx.scene.shape.Rectangle;
 import javafx.scene.shape.Shape;
 import javafx.scene.text.Font;
 import javafx.scene.text.Text;
+import javafx.scene.transform.NonInvertibleTransformException;
 import javafx.scene.transform.Transform;
 import javafx.stage.Stage;
 
+import java.nio.file.attribute.GroupPrincipal;
 import java.util.ArrayList;
 import java.util.List;
 
@@ -33,32 +35,42 @@ public class Unity {
     final private List<Manifold> contacts = new ArrayList<>();
     final double SCENE_X = 1000;
     final double SCENE_Y = 600;
-    double TIMER = 1.0/30.0 ;
+    double TIMER = 0.1 ;
 
     /*
      * function for add objects
      * */
     public void unObjects(){
         // add block
-        Block block = addBlock (0,0,150,150,500,new Point2D(20,0), Color.AQUAMARINE);
-        //Block block2 = addBlock (400,100,150,150,234,new Point2D(0,0), Color.AQUAMARINE);
-        // add platform
-        Block platform = addBlock(-400,SCENE_Y-300,5000,200,202000000,new Point2D(0,0), Color.BLACK);
+        Block block = addBlock (0,0,150,150,100,new Point2D(20,0), Color.AQUAMARINE);
+
+        Block block2 = addBlock (0,0,150,500,200000000,new Point2D(0,0), Color.GREEN);
+        block2.physics_model.stopPower();
+
+        Block block3 = addBlock (700,0,150,500,2000000000,new Point2D(0,0), Color.GREEN);
+        block3.physics_model.stopPower();
+
+        // Block block3 = addBlock (700,0,50,50,1000,new Point2D(0,0), Color.SANDYBROWN);
+        //  add platform
+        Block platform = addBlock(-1000,SCENE_Y-300,5000,200,202000000,new Point2D(0,0), Color.BLACK);
         platform.physics_model.stopPower();
+
         // add text
         Text text = new Text("FF");
         text.setFont(new Font(30));
         text.setX(SCENE_X * 0.5) ;
         text.setY(SCENE_Y - 50);
         shapes.add(text);
-
-
     }
     public void RUN(Stage stage)  {
 
         //create scene
+        Group test = new Group();
         Group group = new Group();
-        Scene scene = new Scene(group,SCENE_X,SCENE_Y);
+        Group Main = new Group(test,group);
+        test.toFront();
+        Scene scene = new Scene(Main,SCENE_X,SCENE_Y);
+        stage.setScene(scene);
 
        Block block = blocks.get(0);
 
@@ -67,13 +79,20 @@ public class Unity {
             @Override
             public void handle(long l) {
                 if(TIMER != 0) {
+                    test.getChildren().clear();
                     for (int i = 0; i < blocks.size() - 1; i++) {
                         for (int j = i + 1; j < blocks.size(); j++) {
 
-                            Manifold manifold = new Manifold(blocks.get(i), blocks.get(j));
+                            blocks.get(i).run(TIMER);
                             if (blocks.get(i).getRectangle().getBoundsInParent().intersects(blocks.get(j).getRectangle().getBoundsInParent())) {
+                                    Manifold manifold = new Manifold(blocks.get(i), blocks.get(j));
+                                    System.out.println(manifold.displacement);
+                                    System.out.println(manifold.normal);
                                     manifold.applyImpulse();
-                                    manifold.posCorrection();
+
+                                    manifold.testPosCorr();
+
+                                //manifold.posCorrection();
 
                             }
 
@@ -82,11 +101,13 @@ public class Unity {
 
                             if (point2 != null) {
                                 for (Point2D point2D : point2) {
-                                    Circle circle = new Circle(point2D.getX(), point2D.getY(), 2, Color.RED);
-                                    group.getChildren().addAll(circle);
+                                    Circle circle = new Circle(point2D.getX(), point2D.getY(), 5, Color.RED);
+                                    test.getChildren().addAll(circle);
+                                    circle.toFront();
+
                                 }
                             }
-                            blocks.get(i).run(TIMER);
+
                         }
                     }
 
@@ -141,6 +162,7 @@ public class Unity {
                     case I -> {
                         Transform transform = block.getRectangle().getLocalToSceneTransform();
                         Point2D point2D = new Point2D(100, 100);
+
                         System.out.println(block.getRectangle().getTranslateX());
 
                     }
@@ -160,7 +182,6 @@ public class Unity {
             group.getChildren().add(block1.getRectangle());
         }
         block.getRectangle().toFront();
-        stage.setScene(scene);
         stage.show();
     }
     private Block addBlock(double x, double y, double width, double height, double mass, Point2D speed, Paint paint){

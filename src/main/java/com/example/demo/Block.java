@@ -54,6 +54,9 @@ public class Block {
         return Points;
     }
 
+    /*
+    * get point of center of block
+    * */
     public Point2D CenterBlock() {
         Rectangle rectangle = getRectangle();
         Transform transform = rectangle.getLocalToParentTransform();
@@ -62,6 +65,9 @@ public class Block {
         return point1.midpoint(point2);
     }
 
+    /*
+    * get array of block normals
+    * */
     public List<Point2D> getNormals() {
         List<Point2D> normals_ = new ArrayList<>(this.normals);
 
@@ -76,6 +82,9 @@ public class Block {
         return normals_;
     }
 
+    /*
+    * get rectangle object of block
+    * */
     public Rectangle getRectangle() {
         return physics_model.getRectangle();
     }

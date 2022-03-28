@@ -2,6 +2,8 @@ package com.example.demo;
 
 import javafx.geometry.Point2D;
 import javafx.scene.shape.Rectangle;
+import javafx.scene.transform.NonInvertibleTransformException;
+import javafx.scene.transform.Transform;
 import javafx.util.Pair;
 
 import java.util.List;
@@ -19,7 +21,8 @@ public class Manifold {
     private void solveCollision(){ // Generate contact information
         normal = new Point2D(0,0);
         displacement = 0;
-        contacts = Utility_Functions.intersects(A, B);
+        contacts = Utility_Functions.IntersectsPoints(A,B);
+        //contacts = Utility_Functions.intersects(A, B);
         Pair<Double,Point2D> length_and_normal1 = FindAxisLeastPenetration(A,B);
         Pair<Double,Point2D> length_and_normal2 = FindAxisLeastPenetration(B,A);
 
@@ -28,6 +31,7 @@ public class Manifold {
         if (length_and_normal1.getKey() > length_and_normal2.getKey()) {
             normal = length_and_normal1.getValue();
             displacement = length_and_normal1.getKey();
+
         }
         else {
             normal = length_and_normal2.getValue();
@@ -131,7 +135,7 @@ public class Manifold {
 
     // correcting position after collision and impulse applying (Применять при необходимости)
     public void posCorrection(){
-        final double percent = 1; // [0.2; 0.8] to correction pos
+        final double percent = 0.2; // [0.2; 0.8] to correction pos
         final double slop = 0.01;   // [0.01; 0.1] our epsilon
         final double iMassA =  1.0 / A.physics_model.mass;
         final double iMassB =  1.0 / B.physics_model.mass;
@@ -142,6 +146,12 @@ public class Manifold {
         // исправляем позиции
         A.physics_model.setPosition(new Point2D(A.getRectangle().getX() - dist.multiply(iMassA).getX(), A.getRectangle().getY() - dist.multiply(iMassA).getY()));
         B.physics_model.setPosition(new Point2D(B.getRectangle().getX() - dist.multiply(iMassB).getX(), B.getRectangle().getY() - dist.multiply(iMassB).getY()));
+    }
+    public void testPosCorr()  {
+        final Point2D norm = normal.multiply(-1).multiply(displacement);
+        final Point2D start_point = new Point2D(A.getRectangle().getX(),A.getRectangle().getY());
+        final Point2D new_norm = new Point2D(start_point.getX() + norm.getX(),start_point.getY() + norm.getY());
+        A.physics_model.setPosition(new_norm);
     }
 
     private Point2D getResultSpeed(final Point2D RA, final Point2D RB){
