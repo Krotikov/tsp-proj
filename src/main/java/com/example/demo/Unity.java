@@ -1,4 +1,4 @@
-package com.example.demo2;
+package com.example.demo;
 
 import javafx.animation.AnimationTimer;
 import javafx.event.EventHandler;
@@ -13,14 +13,10 @@ import javafx.scene.shape.Rectangle;
 import javafx.scene.shape.Shape;
 import javafx.scene.text.Font;
 import javafx.scene.text.Text;
-import javafx.scene.transform.Affine;
-import javafx.scene.transform.NonInvertibleTransformException;
-import javafx.scene.transform.Rotate;
 import javafx.scene.transform.Transform;
 import javafx.stage.Stage;
 
 import java.util.ArrayList;
-import java.util.Arrays;
 import java.util.List;
 
 enum SHAPES{

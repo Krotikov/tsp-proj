@@ -1,118 +1,12 @@
-package com.example.demo2;
+package com.example.demo;
 
 import javafx.geometry.Point2D;
 import javafx.scene.shape.Rectangle;
 import javafx.scene.transform.Rotate;
 import javafx.scene.transform.Transform;
 
-import java.lang.reflect.Array;
 import java.util.ArrayList;
-import java.util.Arrays;
-import java.util.Collections;
 import java.util.List;
-
-class Vec2{
-    private Point2D point_1;
-    private Point2D point_2;
-    private double a;
-    private double b;
-    private double c;
-    Vec2(Point2D p1, Point2D p2){
-        point_1 = p1;
-        point_2 = p2;
-    }
-    Vec2(){
-        point_1 = null;
-        point_2 = null;
-    }
-
-    public void calculate(){
-        a = 0;
-        b = 0;
-        c = 0;
-        if(point_2.getX() == point_1.getX()){
-            b = 0;
-            a = 1;
-            c = -point_2.getX();
-        }else if (point_2.getY() == point_1.getY())
-        {
-            a = 0;
-            b = 1;
-            c = -point_2.getY();
-        }else{
-            a = 1 / (point_2.getX() - point_1.getX());
-            c+= -point_1.getX()/(point_2.getX() - point_1.getX());
-            b = -1 / (point_2.getY() - point_1.getY());
-            c += point_1.getY()/(point_2.getY() - point_1.getY());
-        }
-    }
-
-    public Point2D getPoint1() {
-        return point_1;
-    }
-
-    public Point2D getPoint2() {
-        return point_2;
-    }
-
-    public void setPoint1(Point2D point_1) {
-        this.point_1 = point_1;
-    }
-
-    public void setPoint2(Point2D point_2) {
-        this.point_2 = point_2;
-    }
-
-
-    public double lengthVec(){
-        return Math.sqrt(Math.pow(point_2.getX() - point_1.getX(),2) + Math.pow(point_2.getY() - point_1.getY(),2));
-    }
-    public Point2D getDirection(){
-        return new Point2D(point_2.getX() - point_1.getX(),point_2.getY() - point_1.getY());
-    }
-
-    public double DistanceVecPoint(Point2D point2D){
-        return Math.abs(a* point2D.getX() +  b* point2D.getY() + c)/Math.sqrt(a*a + b*b);
-    }
-
-    Point2D NormalVec(Point2D point2D){
-        double x0 = point2D.getX();
-        double y0 = point2D.getY();
-        double x = (b*(b*x0 - a*y0) - a*c)/(a*a + b*b);
-        double y = (a*(-b*x0 + a*y0) - b*c)/(a*a + b*b);
-        return new Point2D(x0 - x,y0 - y);
-    }
-}
-class Block{
-    public final Physics_Model physics_model;
-    private final List<Point2D>normals = new ArrayList<>();
-    Block(Rectangle rc, double m, Point2D V0){
-        physics_model = new Physics_Model(rc,V0, m);
-        normals.add(new Point2D(0,-1));
-        normals.add(new Point2D(1,0));
-        normals.add(new Point2D(0,1));
-        normals.add(new Point2D(-1,0));
-    }
-    public List<Point2D> getNormals(){
-        List<Point2D> normals_ = new ArrayList<>(this.normals);
-
-        // get rotate of block
-        Rotate rotate = new Rotate(getRectangle().getRotate(),0,0);
-
-
-        for(int i = 0;i < normals_.size();i++){
-            normals_.set(i, rotate.transform(normals_.get(i)));
-        }
-
-        return normals_;
-    }
-    public Rectangle getRectangle() {
-        return physics_model.getRectangle();
-    }
-    public void run(double t){
-        physics_model.run(t);
-    }
-}
 
 
 class Utility_Functions {
@@ -184,26 +78,16 @@ class Utility_Functions {
      * */
     static List<Vec2> getVectors(Block block) {
 
+        List<Point2D> points = block.getPoints();
         Transform transform = block.getRectangle().getLocalToParentTransform();
 
         // левый верхний угол и правый верхний угол
-        Point2D point1 = new Point2D(block.getRectangle().getX(), block.getRectangle().getY());
-        Point2D point2 = new Point2D(block.getRectangle().getX() + block.getRectangle().getWidth(), block.getRectangle().getY());
-        point1 = transform.transform(point1);
-        point2 = transform.transform(point2);
-
-
         // верхняя линия
-        Vec2 vec2_1 = new Vec2(point1, point2);
+        Vec2 vec2_1 = new Vec2(points.get(0), points.get(1));
 
         // левый нижний угол и правый нижний угол
-        point1 = new Point2D(block.getRectangle().getX(), block.getRectangle().getY() + block.getRectangle().getHeight());
-        point2 = new Point2D(block.getRectangle().getX() + block.getRectangle().getWidth(), block.getRectangle().getY() + block.getRectangle().getHeight());
-        point1 = transform.transform(point1);
-        point2 = transform.transform(point2);
-
         // верхняя линия
-        Vec2 vec2_2 = new Vec2(point1, point2);
+        Vec2 vec2_2 = new Vec2(points.get(3), points.get(2));
 
         ArrayList<Vec2> vec2s = new ArrayList<>();
         vec2s.add(vec2_1);
@@ -219,44 +103,10 @@ class Utility_Functions {
     }
 
     /*
-     * Get rectangle points
-     * */
-    static List<Point2D> getPoints(Block block) {
-
-        Transform transform = block.getRectangle().getLocalToParentTransform();
-
-        List<Point2D> Points = new ArrayList<>();
-
-        // левый верхний угол и правый верхний угол
-        Point2D point1 = new Point2D(block.getRectangle().getX(), block.getRectangle().getY());
-        Point2D point2 = new Point2D(block.getRectangle().getX() + block.getRectangle().getWidth(), block.getRectangle().getY());
-        point1 = transform.transform(point1);
-        point2 = transform.transform(point2);
-
-
-        // верхняя линия
-        Points.add(point1);
-        Points.add(point2);
-
-        // левый нижний угол и правый нижний угол
-        point1 = new Point2D(block.getRectangle().getX(), block.getRectangle().getY() + block.getRectangle().getHeight());
-        point2 = new Point2D(block.getRectangle().getX() + block.getRectangle().getWidth(), block.getRectangle().getY() + block.getRectangle().getHeight());
-        point1 = transform.transform(point1);
-        point2 = transform.transform(point2);
-
-        // верхняя линия
-        Points.add(point2);
-        Points.add(point1);
-
-        return Points;
-    }
-
-
-    /*
      * return points of main (points are intersects block)
      * */
     static List<Point2D> IntersectsPoints(Block main, Block block){
-        List<Point2D> main_points = getPoints(main);
+        List<Point2D> main_points = main.getPoints();
         List<Point2D> point2DS = new ArrayList<>();
         for (Point2D main_point : main_points) {
             if (block.getRectangle().getBoundsInParent().contains(main_point)) {

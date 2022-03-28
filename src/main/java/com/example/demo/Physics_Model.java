@@ -1,15 +1,15 @@
-package com.example.demo2;
+package com.example.demo;
 
 import javafx.geometry.Point2D;
 import javafx.scene.shape.Rectangle;
 
 import java.util.List;
 
-class Physics_Model {
+public class Physics_Model {
 
     // final.
     public final double g = 9.806; //9.806
-    public final Point2D power_resistance = new Point2D(0, 0);
+    public final Point2D power_resistance = new Point2D(34, 54);
 
     // object.
     public Point2D velocity;
@@ -102,6 +102,7 @@ class Physics_Model {
 
         return (R.getX() * (power_resistance.getY() + g * mass) - R.getY() * power_resistance.getX()) / (inertia/coefficient);
     }
+
 
     public void run(double t) {
         if (!stop) {

@@ -1,4 +1,4 @@
-package com.example.demo2;
+package com.example.demo;
 
 import javafx.geometry.Point2D;
 import javafx.scene.shape.Rectangle;
@@ -17,7 +17,8 @@ public class Manifold {
     }
 
     private void solveCollision(){ // Generate contact information
-        //contacts = Utility_Functions.IntersectsPoints(A,B);
+        normal = new Point2D(0,0);
+        displacement = 0;
         contacts = Utility_Functions.intersects(A, B);
         Pair<Double,Point2D> length_and_normal1 = FindAxisLeastPenetration(A,B);
         Pair<Double,Point2D> length_and_normal2 = FindAxisLeastPenetration(B,A);
@@ -42,8 +43,8 @@ public class Manifold {
     * */
     Pair<Double,Point2D> FindAxisLeastPenetration(Block blockA, Block blockB){
         List<Point2D> normals = blockA.getNormals();
-        List<Point2D> pointsA = Utility_Functions.getPoints(blockA);
-        List<Point2D> pointsB = Utility_Functions.getPoints(blockB);
+        List<Point2D> pointsA = blockA.getPoints();
+        List<Point2D> pointsB = blockB.getPoints();
 
         short BestIndex = -1;
         double BestDistance = -Double.POSITIVE_INFINITY;
@@ -97,8 +98,8 @@ public class Manifold {
         Rectangle rB = B.getRectangle();
 
         // We need coordinates of center mass
-        Point2D centerA = Utility_Functions.CenterRectangle(rA);
-        Point2D centerB = Utility_Functions.CenterRectangle(rB);
+        Point2D centerA = A.CenterBlock();
+        Point2D centerB = B.CenterBlock();
 
         for (Point2D contact : contacts){
             Point2D RA = contact.subtract(centerA);
