@@ -1,15 +1,15 @@
-package com.example.demo2;
+package com.example.demo;
 
 import javafx.geometry.Point2D;
 import javafx.scene.shape.Rectangle;
 
 import java.util.List;
 
-class Physics_Model {
+public class Physics_Model {
 
     // final.
     public final double g = 9.806; //9.806
-    public final Point2D power_resistance = new Point2D(0, 0);
+    public final Point2D power_resistance = new Point2D(34, 54);
 
     // object.
     public Point2D velocity;
@@ -71,7 +71,7 @@ class Physics_Model {
     * apply the previously calculated momentum to the body
     * */
     public void applyImpulse(final Point2D impulse, final Point2D vec){
-        velocity.add(impulse.multiply(1.0 / mass));
+        velocity = velocity.add(impulse.multiply(1.0 / mass));
         wVelocity += 1.0 / inertia * (vec.getX() * impulse.getY() - vec.getY() * impulse.getX());
     }
     /*
@@ -97,12 +97,12 @@ class Physics_Model {
 
 
     public double getAngularAcceleration(Point2D fulcrum){
-        double coefficient = 10;
+        double coefficient = 1;
         Point2D R = Utility_Functions.CenterRectangle(rectangle).subtract(fulcrum);
-        double w_new = (R.getX() * (power_resistance.getY() + g * mass) - R.getY() * power_resistance.getX()) / (inertia/coefficient);
 
-        return w_new;
+        return (R.getX() * (power_resistance.getY() + g * mass) - R.getY() * power_resistance.getX()) / (inertia/coefficient);
     }
+
 
     public void run(double t) {
         if (!stop) {
@@ -119,7 +119,6 @@ class Physics_Model {
 
 
             // work with angle // work with angle // work with angle //
-            t = Math.abs(t);
             if (contacts != null) {
                 for (Point2D point2D : contacts) {
                     if (point2D != null) {
@@ -129,12 +128,14 @@ class Physics_Model {
                         wVelocity += a_w * t;// new rotate speed
                     }
                 }
-            } else if (!stop) {
+            }
+            else {
+                    rectangle.setRotate(rectangle.getRotate() + wVelocity * t);
+                }
                 rectangle.setRotate(rectangle.getRotate() + wVelocity * t);
+                contacts = null;
             }
 
-            contacts = null;
-        }
     }
 
     public void invY(double k) {
