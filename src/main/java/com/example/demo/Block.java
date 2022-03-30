@@ -55,6 +55,36 @@ public class Block {
     }
 
     /*
+    * contains point or not
+    * */
+    public boolean contains(Point2D point){
+        List<Point2D> corners = this.getPoints();
+
+        // sides of the rectangle
+        Point2D one = corners.get(1).subtract(corners.get(0));
+        Point2D two = corners.get(2).subtract(corners.get(1));
+        Point2D three = corners.get(3).subtract(corners.get(2));
+        Point2D four = corners.get(0).subtract(corners.get(3));
+
+        // vector from point to sides
+        Point2D one_point = point.subtract(corners.get(0));
+        Point2D two_point = point.subtract(corners.get(1));
+        Point2D three_point = point.subtract(corners.get(2));
+        Point2D four_point = point.subtract(corners.get(3));
+
+        //calc the dot product
+        boolean sca_one = one.dotProduct(one_point) >= 0;
+        boolean sca_two = two.dotProduct(two_point) >= 0;
+        boolean sca_three = three.dotProduct(three_point) >= 0;
+        boolean sca_four = four.dotProduct(four_point) >= 0;
+
+        if(sca_one && sca_two && sca_three && sca_four){
+            return true;
+        }else return !(sca_one | sca_two | sca_three | sca_four);
+    }
+
+
+    /*
     * get point of center of block
     * */
     public Point2D CenterBlock() {
