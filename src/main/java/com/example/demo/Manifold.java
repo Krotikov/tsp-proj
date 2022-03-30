@@ -16,6 +16,10 @@ public class Manifold {
         this.A = A;
         this.B = B;
         solveCollision();
+
+        sf = A.physics_model.sFriction;
+        df = A.physics_model.dFriction;
+        e = Math.min(A.physics_model.restitution, B.physics_model.restitution);
     }
 
     private void solveCollision(){ // Generate contact information
@@ -73,7 +77,7 @@ public class Manifold {
                 BestIndex = i;
             }
         }
-        return new Pair<>(BestDistance,normals.get(BestIndex));
+        return new Pair<>(BestDistance, normals.get(BestIndex));
     }
 
     /*
@@ -98,9 +102,6 @@ public class Manifold {
     }
 
     public void applyImpulse(){  // solve impulse
-        Rectangle rA = A.getRectangle();
-        Rectangle rB = B.getRectangle();
-
         // We need coordinates of center mass
         Point2D centerA = A.CenterBlock();
         Point2D centerB = B.CenterBlock();
@@ -121,33 +122,36 @@ public class Manifold {
             double RBCrossN = RB.getX() * normal.getY() - RB.getY() * normal.getX();
 
             double iMassSum = 1.0 / A.physics_model.mass + 1.0 / B.physics_model.mass
-                    + RACrossN * RACrossN * (1.0 / A.physics_model.inertia)
-                    + RBCrossN * RBCrossN * (1.0 / B.physics_model.inertia);
+                    + RACrossN * RACrossN / A.physics_model.inertia
+                    + RBCrossN * RBCrossN / B.physics_model.inertia;
 
-            double j = -2.0 * RVContact / iMassSum;
+            double j = -(1.0 + e) * RVContact / iMassSum;
             j /= contacts.size();
 
             Point2D impulse = normal.multiply(j);
             A.physics_model.applyImpulse(impulse.multiply(-1.0), RA);
             B.physics_model.applyImpulse(impulse, RB);
+
+            // friction impulse
+            RV = getResultSpeed(RA, RB);
+            Point2D tang = RV.subtract(normal.multiply(RV.getX() * normal.getX() + RV.getY() * normal.getY()));
+            tang = tang.normalize();
+
+            // j for tangent force
+            double jt = -(RV.getX() * tang.getX() + RV.getY() * tang.getY()) / iMassSum;
+            jt /= contacts.size();
+
+            if (Math.abs(jt) < 0.000000001){
+                return;
+            }
+
+            Point2D tangentImpulse = Math.abs(jt) < j * sf ? tang.multiply(jt) : tang.multiply(-j * df);
+            A.physics_model.applyImpulse(tangentImpulse.multiply(-1.0), RA);
+            B.physics_model.applyImpulse(tangentImpulse, RB);
         }
     }
 
-    // correcting position after collision and impulse applying (Применять при необходимости)
-    public void posCorrection(){
-        final double percent = 0.2; // [0.2; 0.8] to correction pos
-        final double slop = 0.01;   // [0.01; 0.1] our epsilon
-        final double iMassA =  1.0 / A.physics_model.mass;
-        final double iMassB =  1.0 / B.physics_model.mass;
-
-        double tempCalc = Math.max(0.0, displacement - slop) / (iMassA + iMassB) * percent;
-        Point2D dist = normal.multiply(tempCalc);
-
-        // исправляем позиции
-        A.physics_model.setPosition(new Point2D(A.getRectangle().getX() - dist.multiply(iMassA).getX(), A.getRectangle().getY() - dist.multiply(iMassA).getY()));
-        B.physics_model.setPosition(new Point2D(B.getRectangle().getX() - dist.multiply(iMassB).getX(), B.getRectangle().getY() - dist.multiply(iMassB).getY()));
-    }
-    public void testPosCorr()  {
+    public void posCorr()  {
         final Point2D norm = normal.multiply(-1).multiply(displacement);
         final Point2D start_point = new Point2D(A.getRectangle().getX(),A.getRectangle().getY());
         final Point2D new_norm = new Point2D(start_point.getX() + norm.getX(),start_point.getY() + norm.getY());
@@ -161,6 +165,9 @@ public class Manifold {
         return tempB.subtract(tempA);
     }
 
+    private final double e;
+    private final double sf;
+    private final double df;
     public Point2D normal;           // From A to B
     public List<Point2D> contacts;
     public double displacement;     // Depth of collision
