@@ -78,13 +78,13 @@ public class Unity {
                 if(TIMER != 0) {
                     test.getChildren().clear();
                     for (int i = 1; i < blocks.size(); i++) {
+                        blocks.get(i).run(TIMER);
                         for (int j = 0; j < blocks.size(); j++) {
 
                             if (i == j){
                                 continue;
                             }
 
-                            blocks.get(i).run(TIMER);
                             List<Point2D> point2 = null;
                             if (Utility_Functions.IntersectsPoints(blocks.get(i),blocks.get(j)).size() > 0) {
                                     Manifold manifold = new Manifold(blocks.get(i), blocks.get(j));
