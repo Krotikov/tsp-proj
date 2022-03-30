@@ -67,6 +67,7 @@ class Utility_Functions {
     }
 
 
+
     static double ROUND(double a){
         return a = (double)Math.round(a * MOD)/MOD;
     }
@@ -105,12 +106,18 @@ class Utility_Functions {
     /*
      * return points of main (points are intersects block)
      * */
-    static List<Point2D> IntersectsPoints(Block main, Block block){
-        List<Point2D> main_points = main.getPoints();
+    static List<Point2D> IntersectsPoints(Block block1, Block block2){
+        List<Point2D> block1Points = block1.getPoints();
+        List<Point2D> block2Points = block2.getPoints();
         List<Point2D> point2DS = new ArrayList<>();
-        for (Point2D main_point : main_points) {
-            if (block.getRectangle().getBoundsInParent().contains(main_point)) {
-                point2DS.add(main_point);
+        for (Point2D block1_point : block1Points) {
+            if (block2.contains(block1_point)) {
+                point2DS.add(block1_point);
+            }
+        }
+        for(Point2D block2_point : block2Points){
+            if(block1.contains(block2_point)){
+                point2DS.add(block2_point);
             }
         }
         return point2DS;

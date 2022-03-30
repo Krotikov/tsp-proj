@@ -86,7 +86,7 @@ public class Unity {
 
                             blocks.get(i).run(TIMER);
                             List<Point2D> point2 = null;
-                            if (blocks.get(i).getRectangle().getBoundsInParent().intersects(blocks.get(j).getRectangle().getBoundsInParent())) {
+                            if (Utility_Functions.IntersectsPoints(blocks.get(i),blocks.get(j)).size() > 0) {
                                     Manifold manifold = new Manifold(blocks.get(i), blocks.get(j));
                                     point2 = manifold.contacts;
                                     // System.out.println(manifold.displacement);

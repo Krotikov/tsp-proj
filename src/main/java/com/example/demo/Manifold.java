@@ -25,7 +25,7 @@ public class Manifold {
     private void solveCollision(){ // Generate contact information
         normal = new Point2D(0,0);
         displacement = 0;
-        contacts = Utility_Functions.intersects(A, B);
+        contacts = Utility_Functions.IntersectsPoints(A, B);
 
         Pair<Double,Point2D> length_and_normal1 = FindAxisLeastPenetration(A,B);
         Pair<Double,Point2D> length_and_normal2 = FindAxisLeastPenetration(B,A);
