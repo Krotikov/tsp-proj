@@ -6,6 +6,8 @@ import javafx.geometry.Point2D;
 import javafx.scene.Group;
 import javafx.scene.Scene;
 import javafx.scene.input.KeyEvent;
+import javafx.scene.input.MouseButton;
+import javafx.scene.input.MouseEvent;
 import javafx.scene.paint.Color;
 import javafx.scene.paint.Paint;
 import javafx.scene.shape.Circle;
@@ -35,19 +37,20 @@ public class Unity {
     final private List<Manifold> contacts = new ArrayList<>();
     final double SCENE_X = 1000;
     final double SCENE_Y = 600;
-    double TIMER = 0.1 ;
+    double TIMER = 1.0 / 30 ;
 
     /*
      * function for add objects
      * */
     public void unObjects(){
         // add block
-        Block block = addBlock (0,0,150,150,100,new Point2D(20,0), Color.AQUAMARINE);
-
-        Block block3 = addBlock (700,0,50,50,1000,new Point2D(0,0), Color.SANDYBROWN);
-        //  add platform
         Block platform = addBlock(-1000,SCENE_Y-300,5000,200,202000000,new Point2D(0,0), Color.BLACK);
         platform.physics_model.stopPower();
+
+        Block block = addBlock (0,0,50,50,10,new Point2D(20,0), Color.AQUAMARINE);
+       // Block block3 = addBlock (700,0,50,50,1000,new Point2D(0,0), Color.SANDYBROWN);
+        //  add platform
+
 
         // add text
         Text text = new Text("FF");
@@ -66,7 +69,7 @@ public class Unity {
         Scene scene = new Scene(Main,SCENE_X,SCENE_Y);
         stage.setScene(scene);
 
-       Block block = blocks.get(0);
+       Block block = blocks.get(1);
 
         // while of animation
         new AnimationTimer(){
@@ -74,20 +77,22 @@ public class Unity {
             public void handle(long l) {
                 if(TIMER != 0) {
                     test.getChildren().clear();
-                    for (int i = 0; i < blocks.size() - 1; i++) {
-                        for (int j = i + 1; j < blocks.size(); j++) {
+                    for (int i = 1; i < blocks.size(); i++) {
+                        for (int j = 0; j < blocks.size(); j++) {
+
+                            if (i == j){
+                                continue;
+                            }
 
                             blocks.get(i).run(TIMER);
                             List<Point2D> point2 = null;
                             if (blocks.get(i).getRectangle().getBoundsInParent().intersects(blocks.get(j).getRectangle().getBoundsInParent())) {
                                     Manifold manifold = new Manifold(blocks.get(i), blocks.get(j));
                                     point2 = manifold.contacts;
-                                    System.out.println(manifold.displacement);
-                                    System.out.println(manifold.normal);
+                                    // System.out.println(manifold.displacement);
+                                    //  System.out.println(manifold.normal);
                                     manifold.applyImpulse();
-                                    manifold.testPosCorr();
-
-                                //manifold.posCorrection();
+                                    manifold.posCorr();
 
                             }
                             if (point2 != null) {
@@ -101,8 +106,6 @@ public class Unity {
 
                         }
                     }
-
-
                 }
             }
         }.start();
@@ -115,6 +118,13 @@ public class Unity {
             text.setText(msg);
         });
 
+        // Mose event
+        scene.setOnMouseClicked(mouseEvent -> {
+            if (mouseEvent.getButton() == MouseButton.PRIMARY) {
+                Block bl = addBlock(mouseEvent.getX(), mouseEvent.getY(), 50, 50, 50, new Point2D(0, 0), Color.AQUAMARINE);
+                group.getChildren().add(bl.getRectangle());
+            }
+        });
         // EVENT KEY
         scene.setOnKeyPressed(new EventHandler<KeyEvent>() {
             @Override
@@ -162,7 +172,7 @@ public class Unity {
 
                     }
                     case V -> {
-                        TIMER = 1.0/30.0;
+                        TIMER = 1.0 / 30.0;
                     }
                 }
             }

@@ -9,7 +9,7 @@ public class Physics_Model {
 
     // final.
     public final double g = 9.806; //9.806
-    public final Point2D power_resistance = new Point2D(34, 54);
+    public final Point2D power_resistance = new Point2D(0, 0);
 
     // object.
     public Point2D velocity;
@@ -18,9 +18,11 @@ public class Physics_Model {
 
     public final double mass;
     public final double inertia;
+    public final double restitution = 0.2;
+    public final double sFriction  = 0.8;
+    public final double dFriction = 0.8;
 
     public List<Point2D> contacts;
-
     private boolean stop = false;
 
 
@@ -123,15 +125,10 @@ public class Physics_Model {
                 for (Point2D point2D : contacts) {
                     if (point2D != null) {
                         double a_w = getAngularAcceleration(point2D);
-                        double phi = a_w * (t * t) / 2 + wVelocity * t;
-                        Utility_Functions.RotateOfPoint(point2D, rectangle, phi);
                         wVelocity += a_w * t;// new rotate speed
                     }
                 }
             }
-            else {
-                    rectangle.setRotate(rectangle.getRotate() + wVelocity * t);
-                }
                 rectangle.setRotate(rectangle.getRotate() + wVelocity * t);
                 contacts = null;
             }
