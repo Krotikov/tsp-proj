@@ -72,6 +72,10 @@ class Utility_Functions {
         return a = (double)Math.round(a * MOD)/MOD;
     }
 
+    static void bindBlocks(Block A, Block B){
+        A.bindBlocks.add(B);
+        B.bindBlocks.add(A);
+    }
 
     /*
      * return: array of rectangle's vector components
