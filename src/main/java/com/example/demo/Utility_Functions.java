@@ -6,12 +6,39 @@ import javafx.scene.transform.Rotate;
 import javafx.scene.transform.Transform;
 
 import java.util.ArrayList;
+import java.util.Collections;
+import java.util.Comparator;
 import java.util.List;
 
 
 class Utility_Functions {
     private static final List<Block> blocks = new ArrayList<>();
     private static final long MOD = 100000000000L;
+
+
+    /*
+    * comparators for os x and os y
+    * */
+    static final Comparator<Block> OSX = new Comparator<Block>() {
+        @Override
+        public int compare(Block one, Block two) {
+            return Double.compare(one.physics_model.getRectangle().getX(), two.physics_model.getRectangle().getX());
+        }
+    };
+    static final Comparator<Block> OSY = new Comparator<Block>() {
+        @Override
+        public int compare(Block one, Block two) {
+            return Double.compare(one.physics_model.getRectangle().getY(), two.physics_model.getRectangle().getY());
+        }
+    };
+
+    static void sortOSX(List<Block> blocks){
+        blocks.sort(OSX);
+    }
+
+    static void sortOSY(List<Block> blocks){
+        blocks.sort(OSY);
+    }
 
     /*
      * point of intersect vector's
@@ -72,6 +99,10 @@ class Utility_Functions {
         return a = (double)Math.round(a * MOD)/MOD;
     }
 
+    static void bindBlocks(Block A, Block B){
+        A.bindBlocks.add(B);
+        B.bindBlocks.add(A);
+    }
 
     /*
      * return: array of rectangle's vector components

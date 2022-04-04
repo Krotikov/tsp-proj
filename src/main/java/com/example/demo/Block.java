@@ -6,10 +6,13 @@ import javafx.scene.transform.Rotate;
 import javafx.scene.transform.Transform;
 
 import java.util.ArrayList;
+import java.util.HashSet;
 import java.util.List;
+import java.util.Set;
 
 public class Block {
     public final Physics_Model physics_model;
+    public final Set<Block> bindBlocks = new HashSet<>();
     private final List<Point2D> normals = new ArrayList<>();
 
     Block(Rectangle rc, double m, Point2D V0) {
