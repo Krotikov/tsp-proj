@@ -1,15 +1,19 @@
 package com.example.demo;
 
 import javafx.geometry.Point2D;
+import javafx.scene.effect.Light;
 import javafx.scene.shape.Rectangle;
 import javafx.scene.transform.Rotate;
 import javafx.scene.transform.Transform;
 
 import java.util.ArrayList;
+import java.util.HashSet;
 import java.util.List;
+import java.util.Set;
 
 public class Block {
     public final Physics_Model physics_model;
+    public final Set<Block> bindBlocks = new HashSet<>();
     private final List<Point2D> normals = new ArrayList<>();
 
     Block(Rectangle rc, double m, Point2D V0) {
@@ -18,6 +22,10 @@ public class Block {
         normals.add(new Point2D(1, 0));
         normals.add(new Point2D(0, 1));
         normals.add(new Point2D(-1, 0));
+    }
+
+    Point2D getXY(){
+        return getRectangle().getLocalToParentTransform().transform(new Point2D(getRectangle().getX(),getRectangle().getY()));
     }
 
     /*
