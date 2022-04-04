@@ -1,6 +1,7 @@
 package com.example.demo;
 
 import javafx.geometry.Point2D;
+import javafx.scene.effect.Light;
 import javafx.scene.shape.Rectangle;
 import javafx.scene.transform.Rotate;
 import javafx.scene.transform.Transform;
@@ -21,6 +22,10 @@ public class Block {
         normals.add(new Point2D(1, 0));
         normals.add(new Point2D(0, 1));
         normals.add(new Point2D(-1, 0));
+    }
+
+    Point2D getXY(){
+        return getRectangle().getLocalToParentTransform().transform(new Point2D(getRectangle().getX(),getRectangle().getY()));
     }
 
     /*

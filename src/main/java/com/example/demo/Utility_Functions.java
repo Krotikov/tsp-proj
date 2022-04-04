@@ -22,13 +22,13 @@ class Utility_Functions {
     static final Comparator<Block> OSX = new Comparator<Block>() {
         @Override
         public int compare(Block one, Block two) {
-            return Double.compare(one.physics_model.getRectangle().getX(), two.physics_model.getRectangle().getX());
+            return Double.compare(one.getRectangle().getBoundsInParent().getMaxX(),two.getRectangle().getBoundsInParent().getMaxX());
         }
     };
     static final Comparator<Block> OSY = new Comparator<Block>() {
         @Override
         public int compare(Block one, Block two) {
-            return Double.compare(one.physics_model.getRectangle().getY(), two.physics_model.getRectangle().getY());
+            return Double.compare(one.getRectangle().getBoundsInParent().getMinY(),two.getRectangle().getBoundsInParent().getMinY());
         }
     };
 
