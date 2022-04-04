@@ -121,17 +121,16 @@ public class Physics_Model {
 
             t *= 40;
             // work with angle // work with angle // work with angle //
-            if (contacts != null) {
-                for (Point2D point2D : contacts) {
-                    if (point2D != null) {
-                        double a_w = getAngularAcceleration(point2D);
-                        double phi = a_w * (t * t) / 2  ;
-                       // Utility_Functions.RotateOfPoint(point2D, rectangle, phi);
-                       // wVelocity += a_w * t;// new rotate speed
-                        //rectangle.setRotate(rectangle.getRotate() + phi);
-                    }
-                }
-            }
+            //if (contacts != null) {
+            //    for (Point2D point2D : contacts) {
+            //        if (point2D != null) {
+            //            //double a_w = getAngularAcceleration(point2D);
+            //            //double phi = a_w * (t * t) / 2  ;
+            //            //wVelocity += a_w * t;// new rotate speed
+            //            //rectangle.setRotate(rectangle.getRotate());
+            //        }
+            //    }
+            //}
             rectangle.setRotate(rectangle.getRotate() + wVelocity * t);
 
 

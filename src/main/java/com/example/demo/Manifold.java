@@ -171,14 +171,6 @@ public class Manifold {
                 final Point2D new_norm = new Point2D(start_point.getX() + norm.getX(), start_point.getY() + norm.getY());
             A.physics_model.setPosition(new_norm);
 
-            //final double percent = 0.2; // обычно от 20% до 80%
-            //final double slop = 0.01; // обычно от 0.01 до 0.1
-            //Point2D correction = normal.multiply(Math.max( displacement - displacement*slop, 0.0f ) / (1/A.physics_model.mass+ 1/B.physics_model.mass) * percent);
-            //Point2D pointone = new Point2D(A.physics_model.getRectangle().getX(),A.physics_model.getRectangle().getY());
-            //Point2D pointtwo = new Point2D(B.physics_model.getRectangle().getX(),B.physics_model.getRectangle().getY());
-            //A.physics_model.setPosition(pointone.subtract(correction.multiply(1/A.physics_model.mass)));
-            //B.physics_model.setPosition(pointtwo.subtract(correction.multiply(1/B.physics_model.mass)));
-
     }
 
     private Point2D getResultSpeed(final Point2D RA, final Point2D RB){

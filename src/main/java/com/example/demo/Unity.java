@@ -34,8 +34,9 @@ enum SHAPES{
 public class Unity {
     final private List<Block> blocks = new ArrayList<>();
     final private List<Shape> shapes = new ArrayList<>();
-    final double SCENE_X = 1500;
-    final double SCENE_Y = 800;
+    final double SCENE_X = 1000;
+    final double SCENE_Y = 600;
+    Block platform = null;
     double TIMER = 1.0 / 30 ;
 
     Stool stool;
@@ -44,7 +45,7 @@ public class Unity {
      * */
     public void unObjects(){
         // add block
-        Block platform = addBlock(-1000,SCENE_Y-300,5000,200,202000000,new Point2D(0,0), Color.BLACK);
+        platform = addBlock(-1000,SCENE_Y-300,5000,200,202000000,new Point2D(0,0), Color.BLACK);
         platform.physics_model.stopPower();
         Block block = addBlock (0,0,50,50,400,new Point2D(0,0), Color.AQUAMARINE);
 
@@ -78,16 +79,29 @@ public class Unity {
 
         new AnimationTimer(){
             long startNanoTime = System.nanoTime();
+            double t;
             @Override
             public void handle(long currentNanoTime) {
                 if(TIMER != 0) {
                     test.getChildren().clear();
+
+                    // sorts blocks //
                     Utility_Functions.sortOSX(blocks);
                     Utility_Functions.sortOSY(blocks);
-                    final double t = (currentNanoTime - startNanoTime) / 1000000000.0;
-                    startNanoTime = currentNanoTime;
+                    // sorts blocks //
 
-                    for (int i = 0; i < blocks.size() - 1; i++) {
+                    // for test //
+                    t = (currentNanoTime - startNanoTime) / 1000000000.0;
+                    startNanoTime = currentNanoTime;
+                    for (Block value : blocks) {
+                        value.getRectangle().setFill(Color.GREEN);
+                    }
+                    blocks.get(0).getRectangle().setFill(Color.BLACK);
+                    // for test //
+
+
+                    for (int i = 0; i < blocks.size(); i++) {
+                        if(blocks.get(i) == platform)continue;
                         blocks.get(i).run(t);
                         for (int j = 0; j < blocks.size(); j++) {
                             if (i == j) {
@@ -101,24 +115,20 @@ public class Unity {
 
                                     if (manifold.isCollide) {
                                         point2 = manifold.contacts;
-                                        if (i == 0) {
-                                            System.out.println(manifold.normal);
-                                            System.out.println(manifold.displacement);
-                                        }
                                         manifold.applyImpulse();
                                         manifold.posCorr();
                                     }
 
 
                             }
-                            if (point2 != null) {
+                            /*if (point2 != null) {
                                 for (Point2D point2D : point2) {
                                     Circle circle = new Circle(point2D.getX(), point2D.getY(), 5, Color.RED);
                                     test.getChildren().addAll(circle);
                                     circle.toFront();
 
                                 }
-                            }
+                            }*/
 
                         }
                     }
