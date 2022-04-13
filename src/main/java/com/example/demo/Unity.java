@@ -40,20 +40,37 @@ public class Unity {
     double TIMER = 1.0 / 30 ;
 
     Stool stool;
+    Stool stool1;
     /*
      * function for add objects
      * */
     public void unObjects(){
         // add block
-        platform = addBlock(-1000,SCENE_Y-300,5000,200,202000000,new Point2D(0,0), Color.BLACK);
+        platform = addBlock(-1000,SCENE_Y-200,5000,100,202000000,new Point2D(0,0), Color.BLACK);
         platform.physics_model.stopPower();
-        Block block = addBlock (0,0,50,50,400,new Point2D(0,0), Color.AQUAMARINE);
+        Block block = addBlock (0,0,50,50,4,new Point2D(0,0), Color.AQUAMARINE);
 
-        stool = new Stool(
-                addBlock (100,0,200,50,10000,new Point2D(0,0), Color.AQUAMARINE),
-                addBlock (100,0,50,150,10000,new Point2D(0,0), Color.AQUAMARINE),
-                addBlock (250,0,50,150,10000,new Point2D(0,0), Color.AQUAMARINE)
-        );
+        Block body =  addBlock (200,210,300,50,10,new Point2D(0,0), Color.AQUAMARINE);
+        Block leftleg =addBlock (350,210,50,150,10,new Point2D(0,0), Color.BROWN);
+        Block rightleg =  addBlock (100,210,50,150,10,new Point2D(0,0), Color.BROWN);
+        body.connect(leftleg,true);
+        body.connect(rightleg,false);
+        //stool = new Stool(
+        //        addBlock (100,210,50,150,10,new Point2D(0,0), Color.AQUAMARINE),
+        //        addBlock (100,210,300,50,10,new Point2D(0,0), Color.AQUAMARINE)
+        //);
+        //stool1 = new Stool(
+        //        addBlock (200,210,300,50,10,new Point2D(0,0), Color.AQUAMARINE),
+        //        addBlock (350,210,50,150,10,new Point2D(0,0), Color.BROWN),
+        //        true
+        //);
+        //stool = new Stool(
+        //        stool1.getBody(),
+        //        addBlock (100,210,50,150,10,new Point2D(0,0), Color.BROWN),
+        //            false
+        //       );
+        //Utility_Functions.bindBlocks(stool.getBody(),addBlock (350,210,50,150,10,new Point2D(0,0), Color.AQUAMARINE));
+        //addBlock (350,210,50,150,10,new Point2D(0,0), Color.AQUAMARINE);
 
         // add text
         Text text = new Text("FF");
@@ -77,27 +94,23 @@ public class Unity {
         // while of animation
         // final long startNanoTime = System.nanoTime();
 
+
         new AnimationTimer(){
             long startNanoTime = System.nanoTime();
             double t;
             @Override
             public void handle(long currentNanoTime) {
                 if(TIMER != 0) {
-                    test.getChildren().clear();
-
+                    
                     // sorts blocks //
                     Utility_Functions.sortOSX(blocks);
                     Utility_Functions.sortOSY(blocks);
                     // sorts blocks //
 
-                    // for test //
+
                     t = (currentNanoTime - startNanoTime) / 1000000000.0;
                     startNanoTime = currentNanoTime;
-                    for (Block value : blocks) {
-                        value.getRectangle().setFill(Color.GREEN);
-                    }
-                    blocks.get(0).getRectangle().setFill(Color.BLACK);
-                    // for test //
+
 
 
                     for (int i = 0; i < blocks.size(); i++) {
@@ -107,32 +120,28 @@ public class Unity {
                             if (i == j) {
                                 continue;
                             }
-
-
-                            List<Point2D> point2 = null;
+                           // if(!stool.hasBlock(blocks.get(i))) {
+                           //     stool.run(blocks.get(j), t);
+                           // }
+                           // if(!stool1.hasBlock(blocks.get(i))) {
+                           //     stool1.run(blocks.get(j), t);
+                           //}
+                            //blocks.get(j).testRun(blocks.get(i));
+                            blocks.get(j).testRun(blocks.get(i));
                             if (Utility_Functions.IntersectsPoints(blocks.get(i), blocks.get(j)).size() > 0) {
                                 Manifold manifold = new Manifold(blocks.get(i), blocks.get(j));
-
-                                    if (manifold.isCollide) {
-                                        point2 = manifold.contacts;
-                                        manifold.applyImpulse();
-                                        manifold.posCorr();
-                                    }
-
-
-                            }
-                            /*if (point2 != null) {
-                                for (Point2D point2D : point2) {
-                                    Circle circle = new Circle(point2D.getX(), point2D.getY(), 5, Color.RED);
-                                    test.getChildren().addAll(circle);
-                                    circle.toFront();
-
+                                manifold.solveCollision();
+                                if (manifold.isCollide) {
+                                    manifold.applyImpulse();
+                                    manifold.posCorr();
                                 }
-                            }*/
+                            }
+
+                            //stool1.run(blocks.get(j),t);
+
 
                         }
                     }
-
 
                 }
             }
@@ -212,6 +221,14 @@ public class Unity {
         }
         block.getRectangle().toFront();
         stage.show();
+    }
+    private Block addBlock(double x, double y, double width, double height, double mass, Point2D speed, Paint paint, boolean add){
+        Block block = new Block(new Rectangle(x,y,width,height), mass, speed);
+        block.getRectangle().setFill(paint);
+        if(add) {
+            blocks.add(blocks.size() == 0 ? 0 : blocks.size() - 1, block);
+        }
+        return block;
     }
     private Block addBlock(double x, double y, double width, double height, double mass, Point2D speed, Paint paint){
         Block block = new Block(new Rectangle(x,y,width,height), mass, speed);

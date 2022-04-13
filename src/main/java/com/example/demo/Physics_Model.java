@@ -119,21 +119,8 @@ public class Physics_Model {
             rectangle.setY(y);
             velocity = new Point2D(V_new_x, V_new_y);
 
-            t *= 40;
-            // work with angle // work with angle // work with angle //
-            //if (contacts != null) {
-            //    for (Point2D point2D : contacts) {
-            //        if (point2D != null) {
-            //            //double a_w = getAngularAcceleration(point2D);
-            //            //double phi = a_w * (t * t) / 2  ;
-            //            //wVelocity += a_w * t;// new rotate speed
-            //            //rectangle.setRotate(rectangle.getRotate());
-            //        }
-            //    }
-            //}
+            t *= 50;
             rectangle.setRotate(rectangle.getRotate() + wVelocity * t);
-
-
             contacts = null;
         }
     }

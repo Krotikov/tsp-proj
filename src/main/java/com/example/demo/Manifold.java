@@ -18,16 +18,13 @@ public class Manifold {
         this.B = B;
         isCollide = !A.bindBlocks.contains(B);
 
-        if (isCollide) {
-            solveCollision();
-        }
 
         sf = Math.sqrt(A.physics_model.sFriction * A.physics_model.sFriction + B.physics_model.sFriction * B.physics_model.sFriction);
         df = Math.sqrt(A.physics_model.dFriction * A.physics_model.dFriction + B.physics_model.dFriction * B.physics_model.dFriction);
         e = Math.min(A.physics_model.restitution, B.physics_model.restitution);
     }
 
-    private void solveCollision(){ // Generate contact information
+    public void solveCollision(){ // Generate contact information
         normal = new Point2D(0,0);
         displacement = 0;
         contacts = Utility_Functions.IntersectsPoints(A, B);
