@@ -53,24 +53,9 @@ public class Unity {
         Block body =  addBlock (200,210,300,50,10,new Point2D(0,0), Color.AQUAMARINE);
         Block leftleg =addBlock (350,210,50,150,10,new Point2D(0,0), Color.BROWN);
         Block rightleg =  addBlock (100,210,50,150,10,new Point2D(0,0), Color.BROWN);
+
         body.connect(leftleg,true);
         body.connect(rightleg,false);
-        //stool = new Stool(
-        //        addBlock (100,210,50,150,10,new Point2D(0,0), Color.AQUAMARINE),
-        //        addBlock (100,210,300,50,10,new Point2D(0,0), Color.AQUAMARINE)
-        //);
-        //stool1 = new Stool(
-        //        addBlock (200,210,300,50,10,new Point2D(0,0), Color.AQUAMARINE),
-        //        addBlock (350,210,50,150,10,new Point2D(0,0), Color.BROWN),
-        //        true
-        //);
-        //stool = new Stool(
-        //        stool1.getBody(),
-        //        addBlock (100,210,50,150,10,new Point2D(0,0), Color.BROWN),
-        //            false
-        //       );
-        //Utility_Functions.bindBlocks(stool.getBody(),addBlock (350,210,50,150,10,new Point2D(0,0), Color.AQUAMARINE));
-        //addBlock (350,210,50,150,10,new Point2D(0,0), Color.AQUAMARINE);
 
         // add text
         Text text = new Text("FF");
@@ -120,13 +105,7 @@ public class Unity {
                             if (i == j) {
                                 continue;
                             }
-                           // if(!stool.hasBlock(blocks.get(i))) {
-                           //     stool.run(blocks.get(j), t);
-                           // }
-                           // if(!stool1.hasBlock(blocks.get(i))) {
-                           //     stool1.run(blocks.get(j), t);
-                           //}
-                            //blocks.get(j).testRun(blocks.get(i));
+
                             blocks.get(j).testRun(blocks.get(i));
                             if (Utility_Functions.IntersectsPoints(blocks.get(i), blocks.get(j)).size() > 0) {
                                 Manifold manifold = new Manifold(blocks.get(i), blocks.get(j));
@@ -134,10 +113,11 @@ public class Unity {
                                 if (manifold.isCollide) {
                                     manifold.applyImpulse();
                                     manifold.posCorr();
+                                }else{
+                                    blocks.get(j).testRun(blocks.get(i));
                                 }
                             }
 
-                            //stool1.run(blocks.get(j),t);
 
 
                         }

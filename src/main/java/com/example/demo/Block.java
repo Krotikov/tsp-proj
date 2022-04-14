@@ -15,7 +15,7 @@ public class Block {
     public final Physics_Model physics_model;
     public final Set<Block> bindBlocks = new HashSet<>();
     private final List<Point2D> normals = new ArrayList<>();
-    private List<PairBlock> pairBlock = new ArrayList<>();
+    private List<PairBlock> ArrayPairBlock = new ArrayList<>();
 
     Block(Rectangle rc, double m, Point2D V0) {
         physics_model = new Physics_Model(rc, V0, m);
@@ -129,11 +129,12 @@ public class Block {
     }
 
     void connect(Block block,boolean right){
-        pairBlock.add(new PairBlock(this,block,right));
-        block.pairBlock = pairBlock;
+        PairBlock pairBlock1 = new PairBlock(this,block,right);
+        ArrayPairBlock.add(pairBlock1);
+        block.ArrayPairBlock.add(pairBlock1);
     }
     public void testRun(Block block){
-        for (PairBlock value : pairBlock) {
+        for (PairBlock value : ArrayPairBlock) {
             if (!value.hasBlock(block)) {
                 value.run(this);
             }
