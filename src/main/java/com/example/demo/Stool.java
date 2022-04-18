@@ -12,9 +12,12 @@ public class Stool {
         this.leftLeg = leftLeg;
         this.RightLeg = RightLeg;
 
-        body.connect(leftLeg,true);
-        body.connect(RightLeg,false);
-        Utility_Functions.bindBlocks(this.leftLeg,this.RightLeg);
+        //body.connect(leftLeg,body.getPoints().get(0));
+        body.connect(RightLeg,body.getPoints().get(1));
+        leftLeg.name = "left";
+        RightLeg.name = "right";
+        body.name = "body";
+        //Utility_Functions.bindBlocks(this.leftLeg,this.RightLeg);
     }
 
 }
