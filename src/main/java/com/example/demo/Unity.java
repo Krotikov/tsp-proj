@@ -50,12 +50,11 @@ public class Unity {
         platform.physics_model.stopPower();
         Block block = addBlock (0,0,50,50,4,new Point2D(0,0), Color.AQUAMARINE);
 
-        Block body =  addBlock (200,210,300,50,10,new Point2D(0,0), Color.AQUAMARINE);
-        Block leftleg =addBlock (350,210,50,150,10,new Point2D(0,0), Color.BROWN);
-        Block rightleg =  addBlock (100,210,50,150,10,new Point2D(0,0), Color.BROWN);
-
-        body.connect(leftleg,true);
-        body.connect(rightleg,false);
+        stool = new Stool(
+                addBlock (200,700,400,50,10,new Point2D(0,0), Color.AQUAMARINE),
+                addBlock (350,110,50,300,10,new Point2D(0,0), Color.BROWN),
+                addBlock (100,110,50,300,10,new Point2D(0,0), Color.BROWN)
+        );
 
         // add text
         Text text = new Text("FF");
