@@ -125,6 +125,28 @@ public class Physics_Model {
         }
     }
 
+
+    /*
+    * set new Velocity
+    * */
+    public void setVelocity(double wVelocity){
+        this.wVelocity =wVelocity;
+    }
+
+
+    public double getVelocity(){
+        return wVelocity;
+    }
+
+    public void setAngle(double angle){
+        this.getRectangle().setRotate(angle);
+    }
+
+    public double getAngle(){
+        return this.getRectangle().getRotate();
+    }
+
+    
     public void invY(double k) {
         velocity = new Point2D(velocity.getX(), k * velocity.getY());
     }

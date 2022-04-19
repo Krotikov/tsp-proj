@@ -15,7 +15,7 @@ public class Block {
     public final Physics_Model physics_model;
     public final Set<Block> bindBlocks = new HashSet<>();
     private final List<Point2D> normals = new ArrayList<>();
-    private List<PairBlock> ArrayPairBlock = new ArrayList<>();
+    private final List<PairBlock> ArrayPairBlock = new ArrayList<>();
     public String name;
 
     Block(Rectangle rc, double m, Point2D V0) {
