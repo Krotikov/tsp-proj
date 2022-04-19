@@ -134,7 +134,7 @@ public class Physics_Model {
     }
 
 
-    public double getWVelocity(){
+    public double getVelocity(){
         return wVelocity;
     }
 
