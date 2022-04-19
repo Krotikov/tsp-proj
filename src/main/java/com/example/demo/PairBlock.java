@@ -38,21 +38,25 @@ public class PairBlock {
     public void run(Block block){
         if(hasBlock(block)){
                 final double eps = 0.1;
+                final Block this_Block = block;
 
                 // for rotate vector
                 Rotate rotate;
 
+                // new intersect point for one
                 rotate = new Rotate(one.getRectangle().getRotate() - priAngleOne);
-
                 // get total new intersect
                 Point2D newIntersectPosition1 = one.getXY().add(rotate.transform(diffPointOne));
 
-                rotate = new Rotate(two.getRectangle().getRotate() - priAngleTwo);
 
+                // new intersect point for two
+                rotate = new Rotate(two.getRectangle().getRotate() - priAngleTwo);
                 // get total new intersect
                 Point2D newIntersectPosition2 = two.getXY().add(rotate.transform(diffPointTwo));
 
+                // vector of bias
                 Point2D totalInter;
+
 
                 manifold.solveCollision();
                 //manifold.displacement = eps;
@@ -65,8 +69,13 @@ public class PairBlock {
                     totalInter = newIntersectPosition2.subtract(newIntersectPosition1);
                     block = one;
                 }
+
+                // set new poss
                 block.getRectangle().setX(block.getRectangle().getX() + totalInter.getX());
                 block.getRectangle().setY(block.getRectangle().getY() + totalInter.getY());
+
+                // give an impulse along the chain
+                block.testRun(this_Block);
 
         }
     }
