@@ -129,12 +129,12 @@ public class Physics_Model {
     /*
     * set new Velocity
     * */
-    public void setVelocity(double wVelocity){
+    public void setWVelocity(double wVelocity){
         this.wVelocity =wVelocity;
     }
 
 
-    public double getVelocity(){
+    public double getWVelocity(){
         return wVelocity;
     }
 
@@ -146,7 +146,7 @@ public class Physics_Model {
         return this.getRectangle().getRotate();
     }
 
-    
+
     public void invY(double k) {
         velocity = new Point2D(velocity.getX(), k * velocity.getY());
     }
