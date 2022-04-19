@@ -1,33 +1,81 @@
 package com.example.demo;
 
 import javafx.geometry.Point2D;
+import javafx.scene.transform.Rotate;
+
+import java.util.Objects;
 
 public class PairBlock {
     private final Block one;
     private final Block two;
-    private Point2D intersection;
+    private final Point2D diffPointOne;
+    private final Point2D diffPointTwo;
+    private final double priAngleOne;
+    private final double priAngleTwo;
     private final Manifold manifold;
-    private final boolean right;
-    PairBlock(Block one, Block two, boolean right){
+    PairBlock(Block one, Block two, Point2D intersection){
+        Point2D oneXY = one.getXY();
+        Point2D twoXY = two.getXY();
+
         this.one = one;
         this.two = two;
-        this.right = right;
+
+        // start angle
+        this.priAngleOne = one.getRectangle().getRotate();
+        this.priAngleTwo = two.getRectangle().getRotate();
+
+        // difference of two points
+        this.diffPointOne = intersection.subtract(oneXY);
+        this.diffPointTwo = intersection.subtract(twoXY);
+
+        // save intersection point
+
+        // for processing collision
         this.manifold = new Manifold(one,two);
         Utility_Functions.bindBlocks(one, two);
+
     }
     public void run(Block block){
-        if(right) {
-            if(block == one) {
-                updateRightLeg(one,two);
-            }else if (block == two){
-                updateRightLeg(two,one);
-            }
-        }else{
-            if(block == one) {
-                updateLeftLef(one,two);
-            }else if (block == two){
-                updateLeftLef(two,one);
-            }
+        if(hasBlock(block)){
+                final double eps = 0.1;
+                final Block this_Block = block;
+
+                // for rotate vector
+                Rotate rotate;
+
+                // new intersect point for one
+                rotate = new Rotate(one.getRectangle().getRotate() - priAngleOne);
+                // get total new intersect
+                Point2D newIntersectPosition1 = one.getXY().add(rotate.transform(diffPointOne));
+
+
+                // new intersect point for two
+                rotate = new Rotate(two.getRectangle().getRotate() - priAngleTwo);
+                // get total new intersect
+                Point2D newIntersectPosition2 = two.getXY().add(rotate.transform(diffPointTwo));
+
+                // vector of bias
+                Point2D totalInter;
+
+
+                manifold.solveCollision();
+                //manifold.displacement = eps;
+                manifold.applyImpulse();
+
+                if (block == one) {
+                    totalInter = newIntersectPosition1.subtract(newIntersectPosition2);
+                    block = two;
+                } else {
+                    totalInter = newIntersectPosition2.subtract(newIntersectPosition1);
+                    block = one;
+                }
+
+                // set new poss
+                block.getRectangle().setX(block.getRectangle().getX() + totalInter.getX());
+                block.getRectangle().setY(block.getRectangle().getY() + totalInter.getY());
+
+                // give an impulse along the chain
+                block.testRun(this_Block);
 
         }
     }
@@ -36,18 +84,7 @@ public class PairBlock {
         manifold.solveCollision();
         manifold.applyImpulse();
     }
-    private void updateLeftLef(Block one, Block two){
-        SolveCollision();
-        Point2D point2D = one.getXY().subtract(two.getXY());
-        two.getRectangle().setX(two.getRectangle().getX() + point2D.getX());
-        two.getRectangle().setY(two.getRectangle().getY() + point2D.getY());
-    }
-    private void updateRightLeg(Block one, Block two){
-        SolveCollision();
-        Point2D point2D = one.getPoints().get(1).subtract(two.getPoints().get(1));
-        two.getRectangle().setX(two.getRectangle().getX() + point2D.getX());
-        two.getRectangle().setY(two.getRectangle().getY() + point2D.getY());
-    }
+
     public boolean hasBlock(Block block){
         return (one == block) ||(block == two) ;
     }

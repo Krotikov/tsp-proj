@@ -42,7 +42,7 @@ class Utility_Functions {
 
 
     static double ROUND(double a){
-        return a = (double)Math.round(a * MOD)/MOD;
+        return (double)Math.round(a * MOD)/MOD;
     }
 
     static void bindBlocks(Block A, Block B){

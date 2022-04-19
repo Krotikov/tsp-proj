@@ -51,9 +51,9 @@ public class Unity {
         Block block = addBlock (0,0,50,50,4,new Point2D(0,0), Color.AQUAMARINE);
 
         stool = new Stool(
-                addBlock (200,700,400,50,10,new Point2D(0,0), Color.AQUAMARINE),
-                addBlock (350,110,50,300,10,new Point2D(0,0), Color.BROWN),
-                addBlock (100,110,50,300,10,new Point2D(0,0), Color.BROWN)
+                addBlock (100,210,300,50,10,new Point2D(0,0), Color.AQUAMARINE),
+                addBlock (100,210,50,150,10,new Point2D(0,0), Color.BROWN),
+                addBlock (350,210,50,150,10,new Point2D(0,0), Color.BROWN)
         );
 
         // add text
@@ -99,26 +99,25 @@ public class Unity {
 
                     for (int i = 0; i < blocks.size(); i++) {
                         if(blocks.get(i) == platform)continue;
+
+                        // run objects
                         blocks.get(i).run(t);
+
                         for (int j = 0; j < blocks.size(); j++) {
                             if (i == j) {
                                 continue;
                             }
-
-                            blocks.get(j).testRun(blocks.get(i));
                             if (Utility_Functions.IntersectsPoints(blocks.get(i), blocks.get(j)).size() > 0) {
                                 Manifold manifold = new Manifold(blocks.get(i), blocks.get(j));
                                 manifold.solveCollision();
                                 if (manifold.isCollide) {
                                     manifold.applyImpulse();
                                     manifold.posCorr();
-                                }else{
-                                    blocks.get(j).testRun(blocks.get(i));
                                 }
                             }
 
-
-
+                            // after solve collision processing connection
+                            blocks.get(i).testRun(blocks.get(j));
                         }
                     }
 
