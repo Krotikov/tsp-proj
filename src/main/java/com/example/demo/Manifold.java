@@ -162,10 +162,10 @@ public class Manifold {
     }
 
     public void posCorr()  {
-                final Point2D norm = normal.multiply(-displacement);
-                final Point2D start_point = new Point2D(A.getRectangle().getX(), A.getRectangle().getY());
-                final Point2D new_norm = new Point2D(start_point.getX() + norm.getX(), start_point.getY() + norm.getY());
-            A.physics_model.setPosition(new_norm);
+        final Point2D norm = normal.multiply(-displacement);
+        final Point2D start_point = new Point2D(A.getRectangle().getX(), A.getRectangle().getY());
+        Point2D new_norm = new Point2D(start_point.getX() + norm.getX(), start_point.getY() + norm.getY());
+        A.physics_model.setPosition(new_norm);
 
     }
 
