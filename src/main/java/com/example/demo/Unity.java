@@ -51,9 +51,9 @@ public class Unity {
         Block block = addBlock (0,0,50,50,40,new Point2D(0,0), Color.AQUAMARINE);
 
         stool = new Stool(
-                addBlock (100,160,300,50,10,new Point2D(0,0), Color.AQUAMARINE),
-                addBlock (100,210,50,150,10,new Point2D(0,0), Color.BROWN),
-                addBlock (350,210,50,150,10,new Point2D(0,0), Color.BROWN)
+                addBlock (100,160,300,50,50,new Point2D(0,0), Color.AQUAMARINE),
+                addBlock (100,210,50,150,50,new Point2D(0,0), Color.BROWN),
+                addBlock (350,210,50,150,50,new Point2D(0,0), Color.BROWN)
         );
 
         // add text
