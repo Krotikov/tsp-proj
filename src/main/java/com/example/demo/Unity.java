@@ -111,8 +111,8 @@ public class Unity {
                                     manifold.posCorr();
                                 }
                             }
-                            blocks.get(i).testRun(null);
                         }
+                        blocks.get(i).testRun(null);
                     }
 
                 }
