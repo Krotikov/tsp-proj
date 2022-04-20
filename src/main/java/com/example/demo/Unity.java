@@ -1,27 +1,23 @@
 package com.example.demo;
 
 import javafx.animation.AnimationTimer;
-import javafx.event.EventHandler;
 import javafx.geometry.Point2D;
 import javafx.scene.Group;
 import javafx.scene.Scene;
-import javafx.scene.input.KeyEvent;
 import javafx.scene.input.MouseButton;
-import javafx.scene.input.MouseEvent;
 import javafx.scene.paint.Color;
 import javafx.scene.paint.Paint;
-import javafx.scene.shape.Circle;
 import javafx.scene.shape.Rectangle;
 import javafx.scene.shape.Shape;
 import javafx.scene.text.Font;
 import javafx.scene.text.Text;
-import javafx.scene.transform.NonInvertibleTransformException;
 import javafx.scene.transform.Transform;
 import javafx.stage.Stage;
 
-import java.nio.file.attribute.GroupPrincipal;
 import java.util.ArrayList;
+import java.util.HashSet;
 import java.util.List;
+import java.util.Set;
 
 enum SHAPES{
     TEXT(0);
@@ -36,25 +32,28 @@ public class Unity {
     final private List<Shape> shapes = new ArrayList<>();
     final double SCENE_X = 1000;
     final double SCENE_Y = 600;
-    Block platform = null;
-    double TIMER = 1.0 / 30 ;
+    Set<Block> platforms = new HashSet<>();
+    boolean DEBUG = false;
 
     Stool stool;
-    Stool stool1;
+
     /*
      * function for add objects
      * */
     public void unObjects(){
-        // add block
-        platform = addBlock(-1000,SCENE_Y-200,5000,100,202000000,new Point2D(0,0), Color.BLACK);
-        platform.physics_model.stopPower();
+        Block platforms1 = addBlock(0,SCENE_Y-200,2000,100,202000000,new Point2D(0,0), Color.BLACK);
+        platforms1.physics_model.setAngle(0);
+        platforms.add(platforms1);
+
+
         Block block = addBlock (0,0,50,50,40,new Point2D(0,0), Color.AQUAMARINE);
 
         stool = new Stool(
-                addBlock (100,160,300,50,10,new Point2D(0,0), Color.AQUAMARINE),
-                addBlock (100,210,50,150,10,new Point2D(0,0), Color.BROWN),
-                addBlock (350,210,50,150,10,new Point2D(0,0), Color.BROWN)
+                addBlock (100,160,200,50,50,new Point2D(0,0), Color.AQUAMARINE), // body
+                addBlock (100,210,40,200,50,new Point2D(0,0), Color.BROWN),      // leftLeg
+                addBlock (260,210,40,200,50,new Point2D(0,0), Color.BROWN)       // RightLeg
         );
+
 
         // add text
         Text text = new Text("FF");
@@ -84,7 +83,7 @@ public class Unity {
             double t;
             @Override
             public void handle(long currentNanoTime) {
-                if(TIMER != 0) {
+                if(!DEBUG) {
                     
                     // sorts blocks //
                     Utility_Functions.sortOSX(blocks);
@@ -96,7 +95,7 @@ public class Unity {
                     startNanoTime = currentNanoTime;
                     stool.run(t);
                     for (int i = 0; i < blocks.size(); i++) {
-                        if(blocks.get(i) == platform)continue;
+                        if(platforms.contains(blocks.get(i)))continue;
 
                         // run objects
                         blocks.get(i).run(t);
@@ -112,7 +111,6 @@ public class Unity {
                                     manifold.posCorr();
                                 }
                             }
-                            // after solve collision processing connection
                             blocks.get(i).testRun(null);
                         }
                     }
@@ -177,12 +175,10 @@ public class Unity {
 
                 }
                 case C -> {
-                    TIMER = 0;
+                    DEBUG = false;
 
                 }
-                case V -> {
-                    TIMER = 1.0 / 30.0;
-                }
+
             }
         });
 
