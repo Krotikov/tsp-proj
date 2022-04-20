@@ -15,6 +15,8 @@ public class Block {
     public final Physics_Model physics_model;
     public final Set<Block> bindBlocks = new HashSet<>();
     private final List<Point2D> normals = new ArrayList<>();
+    private final List<PairBlock> ArrayPairBlock = new ArrayList<>();
+    public String name;
 
     Block(Rectangle rc, double m, Point2D V0) {
         physics_model = new Physics_Model(rc, V0, m);
@@ -127,7 +129,21 @@ public class Block {
         return physics_model.getRectangle();
     }
 
+    void connect(Block block,Point2D inter){
+        PairBlock pairBlock1 = new PairBlock(this,block,inter);
+        ArrayPairBlock.add(pairBlock1);
+        block.ArrayPairBlock.add(pairBlock1);
+    }
+    public void testRun(Block block){
+        for (PairBlock value : ArrayPairBlock) {
+            if(!value.hasBlock(block)) {
+                value.run(this);
+            }
+
+        }
+    }
     public void run(double t) {
         physics_model.run(t);
+
     }
 }

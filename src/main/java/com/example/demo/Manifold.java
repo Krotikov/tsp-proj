@@ -18,16 +18,13 @@ public class Manifold {
         this.B = B;
         isCollide = !A.bindBlocks.contains(B);
 
-        if (isCollide) {
-            solveCollision();
-        }
 
         sf = Math.sqrt(A.physics_model.sFriction * A.physics_model.sFriction + B.physics_model.sFriction * B.physics_model.sFriction);
         df = Math.sqrt(A.physics_model.dFriction * A.physics_model.dFriction + B.physics_model.dFriction * B.physics_model.dFriction);
         e = Math.min(A.physics_model.restitution, B.physics_model.restitution);
     }
 
-    private void solveCollision(){ // Generate contact information
+    public void solveCollision(){ // Generate contact information
         normal = new Point2D(0,0);
         displacement = 0;
         contacts = Utility_Functions.IntersectsPoints(A, B);
@@ -165,11 +162,10 @@ public class Manifold {
     }
 
     public void posCorr()  {
-                System.out.println(displacement);
-                final Point2D norm = normal.multiply(-displacement);
-                final Point2D start_point = new Point2D(A.getRectangle().getX(), A.getRectangle().getY());
-                final Point2D new_norm = new Point2D(start_point.getX() + norm.getX(), start_point.getY() + norm.getY());
-            A.physics_model.setPosition(new_norm);
+        final Point2D norm = normal.multiply(-displacement);
+        final Point2D start_point = new Point2D(A.getRectangle().getX(), A.getRectangle().getY());
+        Point2D new_norm = new Point2D(start_point.getX() + norm.getX(), start_point.getY() + norm.getY());
+        A.physics_model.setPosition(new_norm);
 
     }
 

@@ -40,19 +40,20 @@ public class Unity {
     double TIMER = 1.0 / 30 ;
 
     Stool stool;
+    Stool stool1;
     /*
      * function for add objects
      * */
     public void unObjects(){
         // add block
-        platform = addBlock(-1000,SCENE_Y-300,5000,200,202000000,new Point2D(0,0), Color.BLACK);
+        platform = addBlock(-1000,SCENE_Y-200,5000,100,202000000,new Point2D(0,0), Color.BLACK);
         platform.physics_model.stopPower();
-        Block block = addBlock (0,0,50,50,400,new Point2D(0,0), Color.AQUAMARINE);
+        Block block = addBlock (0,0,50,50,40,new Point2D(0,0), Color.AQUAMARINE);
 
         stool = new Stool(
-                addBlock (100,0,200,50,10000,new Point2D(0,0), Color.AQUAMARINE),
-                addBlock (100,0,50,150,10000,new Point2D(0,0), Color.AQUAMARINE),
-                addBlock (250,0,50,150,10000,new Point2D(0,0), Color.AQUAMARINE)
+                addBlock (100,160,300,50,10,new Point2D(0,0), Color.AQUAMARINE),
+                addBlock (100,210,50,150,10,new Point2D(0,0), Color.BROWN),
+                addBlock (350,210,50,150,10,new Point2D(0,0), Color.BROWN)
         );
 
         // add text
@@ -77,62 +78,44 @@ public class Unity {
         // while of animation
         // final long startNanoTime = System.nanoTime();
 
+
         new AnimationTimer(){
             long startNanoTime = System.nanoTime();
             double t;
             @Override
             public void handle(long currentNanoTime) {
                 if(TIMER != 0) {
-                    test.getChildren().clear();
-
+                    
                     // sorts blocks //
                     Utility_Functions.sortOSX(blocks);
                     Utility_Functions.sortOSY(blocks);
                     // sorts blocks //
 
-                    // for test //
+
                     t = (currentNanoTime - startNanoTime) / 1000000000.0;
                     startNanoTime = currentNanoTime;
-                    for (Block value : blocks) {
-                        value.getRectangle().setFill(Color.GREEN);
-                    }
-                    blocks.get(0).getRectangle().setFill(Color.BLACK);
-                    // for test //
-
-
+                    stool.run(t);
                     for (int i = 0; i < blocks.size(); i++) {
                         if(blocks.get(i) == platform)continue;
+
+                        // run objects
                         blocks.get(i).run(t);
                         for (int j = 0; j < blocks.size(); j++) {
                             if (i == j) {
                                 continue;
                             }
-
-
-                            List<Point2D> point2 = null;
                             if (Utility_Functions.IntersectsPoints(blocks.get(i), blocks.get(j)).size() > 0) {
                                 Manifold manifold = new Manifold(blocks.get(i), blocks.get(j));
-
-                                    if (manifold.isCollide) {
-                                        point2 = manifold.contacts;
-                                        manifold.applyImpulse();
-                                        manifold.posCorr();
-                                    }
-
-
-                            }
-                            /*if (point2 != null) {
-                                for (Point2D point2D : point2) {
-                                    Circle circle = new Circle(point2D.getX(), point2D.getY(), 5, Color.RED);
-                                    test.getChildren().addAll(circle);
-                                    circle.toFront();
-
+                                manifold.solveCollision();
+                                if (manifold.isCollide) {
+                                    manifold.applyImpulse();
+                                    manifold.posCorr();
                                 }
-                            }*/
-
+                            }
+                            // after solve collision processing connection
+                            blocks.get(i).testRun(null);
                         }
                     }
-
 
                 }
             }
@@ -154,54 +137,51 @@ public class Unity {
             }
         });
         // EVENT KEY
-        scene.setOnKeyPressed(new EventHandler<KeyEvent>() {
-            @Override
-            public void handle(KeyEvent keyEvent) {
-                switch (keyEvent.getCode()) {
-                    case UP -> block.physics_model.addY(-40);
-                    case DOWN -> block.physics_model.addY(40);
-                    case LEFT -> block.physics_model.addX(-40);
-                    case RIGHT -> block.physics_model.addX(40);
-                    case R -> {
-                        block.getRectangle().setScaleX(block.getRectangle().getScaleX() + 10);
-                    }
-                    case Q -> {
-                        block.getRectangle().setScaleX(block.getRectangle().getScaleX() - 10);
-                    }
-                    case U -> {
-                        block.getRectangle().setRotate(block.getRectangle().getRotate() + 10);
+        scene.setOnKeyPressed(keyEvent -> {
+            switch (keyEvent.getCode()) {
+                case UP -> block.physics_model.addY(-40);
+                case DOWN -> block.physics_model.addY(40);
+                case LEFT -> block.physics_model.addX(-40);
+                case RIGHT -> block.physics_model.addX(40);
+                case R -> {
+                    block.getRectangle().setScaleX(block.getRectangle().getScaleX() + 10);
+                }
+                case Q -> {
+                    block.getRectangle().setScaleX(block.getRectangle().getScaleX() - 10);
+                }
+                case U -> {
+                    block.getRectangle().setRotate(block.getRectangle().getRotate() + 10);
 
-                    }
-                    case O -> {
-                        Transform transform = block.getRectangle().getLocalToParentTransform();
-                        System.out.println(transform);
-                        System.out.println(block.getRectangle().getX());
-                        System.out.println(block.getRectangle().getX() + block.getRectangle().getWidth());
-                        System.out.println(transform.transform(block.getRectangle().getX(), block.getRectangle().getY()));
-                        System.out.print(transform.transform(block.getRectangle().getX() + block.getRectangle().getWidth(), block.getRectangle().getY()));
-                    }
-                    case A -> {
-                        Transform transform = block.getRectangle().getLocalToSceneTransform();
-                        System.out.println(transform);
-                    }
-                    case SPACE -> {
-                        block.physics_model.invX(0);
-                        block.physics_model.invY(0);
-                    }
-                    case I -> {
-                        Transform transform = block.getRectangle().getLocalToSceneTransform();
-                        Point2D point2D = new Point2D(100, 100);
+                }
+                case O -> {
+                    Transform transform = block.getRectangle().getLocalToParentTransform();
+                    System.out.println(transform);
+                    System.out.println(block.getRectangle().getX());
+                    System.out.println(block.getRectangle().getX() + block.getRectangle().getWidth());
+                    System.out.println(transform.transform(block.getRectangle().getX(), block.getRectangle().getY()));
+                    System.out.print(transform.transform(block.getRectangle().getX() + block.getRectangle().getWidth(), block.getRectangle().getY()));
+                }
+                case A -> {
+                    Transform transform = block.getRectangle().getLocalToSceneTransform();
+                    System.out.println(transform);
+                }
+                case SPACE -> {
+                    block.physics_model.invX(0);
+                    block.physics_model.invY(0);
+                }
+                case I -> {
+                    Transform transform = block.getRectangle().getLocalToSceneTransform();
+                    Point2D point2D = new Point2D(100, 100);
 
-                        System.out.println(block.getRectangle().getTranslateX());
+                    System.out.println(block.getRectangle().getTranslateX());
 
-                    }
-                    case C -> {
-                        TIMER = 0;
+                }
+                case C -> {
+                    TIMER = 0;
 
-                    }
-                    case V -> {
-                        TIMER = 1.0 / 30.0;
-                    }
+                }
+                case V -> {
+                    TIMER = 1.0 / 30.0;
                 }
             }
         });
@@ -213,6 +193,7 @@ public class Unity {
         block.getRectangle().toFront();
         stage.show();
     }
+
     private Block addBlock(double x, double y, double width, double height, double mass, Point2D speed, Paint paint){
         Block block = new Block(new Rectangle(x,y,width,height), mass, speed);
         block.getRectangle().setFill(paint);
