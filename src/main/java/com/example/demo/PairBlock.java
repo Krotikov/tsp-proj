@@ -37,7 +37,14 @@ public class PairBlock {
     }
     public void run(Block block){
         if(hasBlock(block)){
-                final double eps = 0.1;
+
+
+                final double eps = 20;
+
+                manifold.solveCollision();
+                manifold.applyImpulse();
+
+
                 final Block this_Block = block;
 
                 // for rotate vector
@@ -58,9 +65,6 @@ public class PairBlock {
                 Point2D totalInter;
 
 
-                manifold.solveCollision();
-                //manifold.displacement = eps;
-                manifold.applyImpulse();
 
                 if (block == one) {
                     totalInter = newIntersectPosition1.subtract(newIntersectPosition2);
@@ -69,6 +73,7 @@ public class PairBlock {
                     totalInter = newIntersectPosition2.subtract(newIntersectPosition1);
                     block = one;
                 }
+
 
                 // set new poss
                 block.getRectangle().setX(block.getRectangle().getX() + totalInter.getX());
