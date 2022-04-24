@@ -5,6 +5,7 @@
 package Project;
 
 import Project.modules.Physics.Unity;
+import javafx.animation.PauseTransition;
 import javafx.event.ActionEvent;
 import javafx.fxml.FXML;
 import javafx.fxml.Initializable;
@@ -12,15 +13,31 @@ import javafx.scene.Group;
 import javafx.scene.SubScene;
 import javafx.scene.chart.LineChart;
 import javafx.scene.control.Button;
+import javafx.scene.layout.Background;
+import javafx.scene.layout.BackgroundFill;
 import javafx.scene.paint.Color;
 import javafx.scene.paint.Paint;
 import javafx.scene.shape.Circle;
+import javafx.util.Duration;
 
 import java.net.URL;
+import java.util.ArrayList;
+import java.util.List;
 import java.util.ResourceBundle;
 
-public class PleaseProvideControllerClassName implements Initializable {
+enum Buttons{
+    RESET(0),
+    START(1),
+    STOP(2);
+    final public int ind;
+    Buttons(int ind){
+        this.ind = ind;
+    }
+}
 
+public class PleaseProvideControllerClassName implements Initializable {
+    List<PauseTransition> pauseTransitionList = new ArrayList<>();
+    List<String> styleList = new ArrayList<>();
     private Unity unity;
 
     @FXML // fx:id="Reset"
@@ -41,11 +58,16 @@ public class PleaseProvideControllerClassName implements Initializable {
     @FXML
     void StartClick(ActionEvent event) {
         unity.setDEBUG(false);
+        start.setStyle("-fx-background-color: rgba(125,132,132,0.37);");
+        pauseTransitionList.get(Buttons.START.ind).playFromStart();
     }
 
     @FXML
     void StopClick(ActionEvent event) {
+
         unity.setDEBUG(true);
+        stop.setStyle("-fx-background-color: rgba(125,132,132,0.37);");
+        pauseTransitionList.get(Buttons.STOP.ind).playFromStart();
     }
 
     @FXML
@@ -53,6 +75,8 @@ public class PleaseProvideControllerClassName implements Initializable {
         unity = new Unity();
         unity.unObjects();
         unity.RUN(this.SubScene);
+        Reset.setStyle("-fx-background-color: rgba(125,132,132,0.37);");
+        pauseTransitionList.get(Buttons.RESET.ind).playFromStart();
     }
 
     @Override
@@ -61,5 +85,19 @@ public class PleaseProvideControllerClassName implements Initializable {
         SubScene.setFill(Color.WHITE);
         unity.unObjects();
         unity.RUN(this.SubScene);
+        addButtonsPause();
+    }
+
+    private void addButtonsPause(){
+        for(int i = 0;i < Buttons.values().length;i++) {
+            pauseTransitionList.add(new PauseTransition(Duration.seconds(0.2)));
+        }
+        styleList.add(Reset.getStyle());
+        styleList.add(start.getStyle());
+        styleList.add(stop.getStyle());
+        pauseTransitionList.get(Buttons.RESET.ind).setOnFinished(actionEvent -> Reset.setStyle(styleList.get(Buttons.RESET.ind)));
+        pauseTransitionList.get(Buttons.START.ind).setOnFinished(actionEvent -> start.setStyle(styleList.get(Buttons.START.ind)));
+        pauseTransitionList.get(Buttons.STOP.ind).setOnFinished(actionEvent -> stop.setStyle(styleList.get(Buttons.STOP.ind)));
+
     }
 }
