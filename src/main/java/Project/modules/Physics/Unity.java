@@ -2,7 +2,9 @@ package Project.modules.Physics;
 
 import javafx.animation.AnimationTimer;
 import javafx.geometry.Point2D;
+import javafx.scene.Camera;
 import javafx.scene.Group;
+import javafx.scene.ParallelCamera;
 import javafx.scene.SubScene;
 import javafx.scene.input.MouseButton;
 import javafx.scene.paint.Color;
@@ -17,6 +19,7 @@ import java.util.ArrayList;
 import java.util.HashSet;
 import java.util.List;
 import java.util.Set;
+import java.util.concurrent.atomic.AtomicReference;
 
 enum SHAPES{
     TEXT(0);
@@ -33,6 +36,7 @@ public class Unity {
     double SCENE_Y;
     Set<Block> platforms = new HashSet<>();
     boolean DEBUG = false;
+    boolean View = false;
 
     Stool stool;
 
@@ -40,7 +44,7 @@ public class Unity {
      * function for add objects
      * */
     public void unObjects(){
-        Block platforms1 = addBlock(-2000,SCENE_Y + 500 ,5000,100,202000000,new Point2D(0,0), Color.BLACK);
+        Block platforms1 = addBlock(-2000,SCENE_Y + 500 ,10000,100,202000000,new Point2D(0,0), Color.BLACK);
         platforms1.physics_model.setAngle(0);
         platforms.add(platforms1);
 
@@ -67,12 +71,15 @@ public class Unity {
     }
 
     public SubScene RUN(SubScene scene)  {
+        Camera camera = new ParallelCamera();
         SCENE_X = scene.getWidth();
         SCENE_Y = scene.getHeight();
+        scene.setCamera(camera);
 
         //create scene
         Group test = new Group();
         Group group = new Group();
+        group.getChildren().add(camera);
         Group Main = new Group(test,group);
         scene.setRoot(Main);
         test.toFront();
@@ -98,6 +105,8 @@ public class Unity {
 
                     t = (currentNanoTime - startNanoTime) / 1000000000.0;
                     startNanoTime = currentNanoTime;
+
+                    // fix time
                     t = 1./45;
                         stool.AlphaRun2();
                         for (int i = 0; i < blocks.size(); i++) {
@@ -126,28 +135,56 @@ public class Unity {
             }
         }.start();
 
+
+
+        // for test // for test //
+        AtomicReference<Point2D> translate = new AtomicReference<>(new Point2D(0, 0));
+
+        AtomicReference<Double> MouseX = new AtomicReference<>(0.0);
+        AtomicReference<Double> MouseY = new AtomicReference<>( 0.0);
+
+        AtomicReference<Double> oldMouseX = new AtomicReference<>(0.0);
+        AtomicReference<Double> oldMouseY = new AtomicReference<>(0.0);
         // for testing /// // // for testing // /// //
         Text text = (Text) shapes.get(SHAPES.TEXT.id);
         scene.setOnMouseMoved(event -> {
             String msg =
                     "x: " +event.getX()      + ", y: "       + event.getY()        ;
             text.setText(msg);
+            if(View){
+                MouseX.set(event.getX());
+                MouseY.set(event.getY());
+                camera.setTranslateX(oldMouseX.get() - MouseX.get() + translate.get().getX());
+                camera.setTranslateY(oldMouseY.get() - MouseY.get() + translate.get().getY());
+            }
         });
+
+
 
         // Mose event
         scene.setOnMouseClicked(mouseEvent -> {
             if (mouseEvent.getButton() == MouseButton.PRIMARY) {
-                Block bl = addBlock(mouseEvent.getX(), mouseEvent.getY(), 50, 50, 50, new Point2D(0, 0), Color.AQUAMARINE);
+                System.out.println(mouseEvent.getX());
+                Block bl = addBlock(mouseEvent.getX() + translate.get().getX(), mouseEvent.getY() + translate.get().getY(), 50, 50, 50, new Point2D(0, 0), Color.AQUAMARINE);
                 group.getChildren().add(bl.getRectangle());
+
+            }
+            if(mouseEvent.getButton() == MouseButton.SECONDARY){
+                View = !View;
+                if(!View){
+                    translate.set(new Point2D(oldMouseX.get() - MouseX.get() + translate.get().getX(), oldMouseY.get() - MouseY.get() + translate.get().getY()));
+                }
+                oldMouseX.set(mouseEvent.getX());
+                oldMouseY.set(mouseEvent.getY());
             }
         });
         // EVENT KEY
         scene.setOnKeyPressed(keyEvent -> {
             switch (keyEvent.getCode()) {
-                case UP -> block.physics_model.addY(-40);
-                case DOWN -> block.physics_model.addY(40);
-                case LEFT -> block.physics_model.addX(-40);
-                case RIGHT -> block.physics_model.addX(40);
+//                case UP -> block.physics_model.addY(-40);
+//                case DOWN -> block.physics_model.addY(40);
+//                case LEFT -> block.physics_model.addX(-40);
+//                case RIGHT -> block.physics_model.addX(40);
                 case R -> {
                     block.getRectangle().setScaleX(block.getRectangle().getScaleX() + 10);
                 }
@@ -181,9 +218,11 @@ public class Unity {
                     System.out.println(block.getRectangle().getTranslateX());
 
                 }
-                case C -> {
-                    DEBUG = false;
-
+                case RIGHT -> {
+                    camera.setTranslateX(100);
+                }
+                case LEFT -> {
+                    camera.setTranslateX(-100);
                 }
 
             }

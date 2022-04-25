@@ -71,8 +71,8 @@ public class Stool {
     public void AlphaRun2(){
         // тестовая функция рана номер 2
         Point2D orientationNormal = body.getNormals().get(2);
-        double alpha1 = 1.5;
-        double alpha2 = 1.5;
+        double alpha1 = 1;
+        double alpha2 = 1;
 
         Point2D vec1 = leftLeg.getPoints().get(3).subtract(leftLeg.getPoints().get(0));
         if(Math.abs(orientationNormal.angle(vec1)) > 20) {

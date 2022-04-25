@@ -83,6 +83,10 @@ public class PleaseProvideControllerClassName implements Initializable {
     public void initialize(URL url, ResourceBundle resourceBundle) {
         unity = new Unity();
         SubScene.setFill(Color.WHITE);
+        SubScene.setOnKeyPressed(keyEvent -> {
+            System.out.println("3"
+            );
+        });
         unity.unObjects();
         unity.RUN(this.SubScene);
         addButtonsPause();
