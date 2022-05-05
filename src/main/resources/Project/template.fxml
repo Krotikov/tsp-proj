@@ -41,7 +41,7 @@
                   <Font name="Franklin Gothic Heavy" size="13.0" />
                </font>
             </Button>
-            <Button fx:id="stop" mnemonicParsing="false" onAction="#StopClick" style="-fx-background-color: white; -fx-border-color: red;" text="Stop" textAlignment="CENTER" textFill="#5c2929" textOverrun="CLIP">
+            <Button fx:id="stop" mnemonicParsing="false" onAction="#StopClick" style="-fx-background-color: #ad2828; -fx-border-color: red;" text="Stop" textAlignment="CENTER" textFill="#5c2929" textOverrun="CLIP">
                <font>
                   <Font name="Franklin Gothic Heavy" size="13.0" />
                </font>

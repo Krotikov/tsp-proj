@@ -1,98 +1,152 @@
 package Project.modules.Physics;
 
-
 import javafx.geometry.Point2D;
+import javafx.scene.paint.Color;
+
+import java.util.ArrayList;
+import java.util.List;
 
 public class Stool {
-    private final Block body;
-    public final Block leftLeg;
-    private final Block RightLeg;
-    private double k1 = -1;
-    private double k2 = -1;
+    static final Point2D startPoint = new Point2D(150,260);
+    static final double weightBody = 300;
+    static final double heightBody = 50;
+    static final double weightLeg = 50;
+    static final double heightLeg = 200;
+    static final Color color = Color.AQUAMARINE;
+    final Block leftLeg;
+    final Block rightLeg;
+    final Block body;
+    final Game game;
+    private Point2D normalDown;
+    private final double startPos;
+    // parameters
+    double alpha1 = 0.5;
 
-    Stool(final Block body, final  Block leftLeg,final Block RightLeg){
-        this.body = body;
-        this.leftLeg = leftLeg;
-        this.RightLeg = RightLeg;
-
-        // connect with body in points
-        Point2D one = body.getPoints().get(3);
-        Point2D two = body.getPoints().get(2);
-
-        // set any point
-        one = one.add(10,0);
-        two = two.add(-10,0);
-
-        // connect blocks
-        body.connect(leftLeg,one);
-        body.connect(RightLeg,two);
-
-
-        leftLeg.name = "left";
-        RightLeg.name = "right";
-        body.name = "body";
-        Utility_Functions.bindBlocks(this.leftLeg,this.RightLeg);
-
+    public Stool(Point2D point2D, double weightBody, double heightBody, double weightLeg, double heightLeg, Game game, Color color){
+        this.startPos = point2D.getX();
+        this.game =game;
+        this.leftLeg = game.addBlock(
+                new Point2D(point2D.getX(), point2D.getY()),
+                weightLeg,
+                heightLeg,
+                50,
+                color
+        );
+        this.rightLeg = game.addBlock(
+                new Point2D(point2D.getX() + weightBody - weightLeg, point2D.getY()),
+                weightLeg,
+                heightLeg,
+                50,
+                color
+        );
+        this.body = game.addBlock(
+                new Point2D(point2D.getX(),point2D.getY()),
+                weightBody,
+                heightBody,
+                50,
+                color
+        );
+        game.linkList.add(new Link(
+                leftLeg.getPointList().get(0).circle,
+                body.getPointList().get(3).circle,
+                0
+        ));
+        game.linkList.add(new Link(
+                body.getPointList().get(2).circle,
+                rightLeg.getPointList().get(1).circle,
+                0
+        ));
+        game.setStool(this);
+        this.game.bl = body;
+        Utility_Functions.bindBlocks(leftLeg,body);
+        Utility_Functions.bindBlocks(body,rightLeg);
+        Utility_Functions.bindBlocks(leftLeg,rightLeg);
     }
-
-    public void run(double t){
-        // тестовая функция рана 1
-
-        Point2D orientationNormal = body.getNormals().get(2);
-        double alpha1 = 50;
-        double alpha2 = 50;
-
-        Point2D vec1 = leftLeg.getPoints().get(3).subtract(leftLeg.getPoints().get(0));
-        if(Math.abs(orientationNormal.angle(vec1)) > 20) {
-            k1 *= -1;
-        }
-        leftLeg.physics_model.setAngle(leftLeg.physics_model.getAngle()  + alpha1 * t*k1);
-
-        while(Math.abs(orientationNormal.angle(vec1)) > 20) {
-            leftLeg.physics_model.setAngle(leftLeg.physics_model.getAngle()  + alpha1 * t*k1);
-            vec1 = leftLeg.getPoints().get(3).subtract(leftLeg.getPoints().get(0));
-        }
-
-
-        Point2D vec2 = RightLeg.getPoints().get(2).subtract(RightLeg.getPoints().get(1));
-        if(Math.abs(orientationNormal.angle(vec2)) > 20) {
-            k2 *= -1;
-        }
-        RightLeg.physics_model.setAngle(RightLeg.physics_model.getAngle() + alpha2 * t * k2);
-
-        // bug fix
-        while(Math.abs(orientationNormal.angle(vec2)) > 20) {
-            RightLeg.physics_model.setAngle(RightLeg.physics_model.getAngle() + alpha2 * t * k2);
-            vec2 = RightLeg.getPoints().get(3).subtract(RightLeg.getPoints().get(0));
-        }
+    public Stool(double param, Game game){
+        Point2D point2D = startPoint;
+        this.startPos = point2D.getX();
+        this.game =game;
+        this.leftLeg = game.addBlock(
+                new Point2D(point2D.getX(), point2D.getY()),
+                weightLeg,
+                heightLeg,
+                50,
+                color
+        );
+        this.rightLeg = game.addBlock(
+                new Point2D(point2D.getX() + weightBody - weightLeg, point2D.getY()),
+                weightLeg,
+                heightLeg,
+                50,
+                color
+        );
+        this.body = game.addBlock(
+                new Point2D(point2D.getX(),point2D.getY()),
+                weightBody,
+                heightBody,
+                50,
+                color
+        );
+        game.linkList.add(new Link(
+                leftLeg.getPointList().get(0).circle,
+                body.getPointList().get(3).circle,
+                0
+        ));
+        game.linkList.add(new Link(
+                body.getPointList().get(2).circle,
+                rightLeg.getPointList().get(1).circle,
+                0
+        ));
+        game.setStool(this);
+        this.game.bl = body;
+        Utility_Functions.bindBlocks(leftLeg,body);
+        Utility_Functions.bindBlocks(body,rightLeg);
+        Utility_Functions.bindBlocks(leftLeg,rightLeg);
     }
+    void setParameters(double parameters){
+        this.alpha1 = parameters;
+    }
+    void run(double t){
+        normalDown = body.getNormals().get(2);
+        double phi1 = alpha1* 0.4 * Math.sin(t/1.2 * 2);
+        double phi2 = alpha1 * 0.7 *Math.sin(t/1.2 * 2);
 
+        // left leg ru
+        runLeg(phi1,leftLeg.getPointList().get(0),
+                leftLeg.getPointList().get(3)
+                );
 
-    public void AlphaRun2(){
-        // тестовая функция рана номер 2
-        Point2D orientationNormal = body.getNormals().get(2);
-        double alpha1 = 1;
-        double alpha2 = 1;
+        //right leg run
+        runLeg(phi2,rightLeg.getPointList().get(1),
+                rightLeg.getPointList().get(2)
+        );
+    }
+    double getDist(){
+        return body.getPointList().get(0).circle.getCenterX() - startPos;
+    }
+    void runLeg(double phi,Point OS_P, Point CorrPos_P ){
 
-        Point2D vec1 = leftLeg.getPoints().get(3).subtract(leftLeg.getPoints().get(0));
-        if(Math.abs(orientationNormal.angle(vec1)) > 20) {
-            k1 *= -1;
-            leftLeg.physics_model.setWVelocity(2*k1 * alpha1);
+        // os of rotate
+        Point2D OS = OS_P.getPos();
+        Point2D startPoint = OS.add(normalDown.multiply(leftLeg.height));
+        Point2D delta = OS.subtract(new Point2D(0,0));
 
-        }else {
-            leftLeg.physics_model.setWVelocity(k1 * alpha1);
-        }
+        // move OS to x = 0 y = 0 and rotate
+        startPoint = startPoint.subtract(delta);
 
+        // new coords
+        double x_ = startPoint.getX() * Math.cos(phi) - startPoint.getY()*Math.sin(phi) + delta.getX();
+        double y_ = startPoint.getX() * Math.sin(phi) + startPoint.getY()*Math.cos(phi) + delta.getY();
 
-
-
-        Point2D vec2 = RightLeg.getPoints().get(2).subtract(RightLeg.getPoints().get(1));
-        if(Math.abs(orientationNormal.angle(vec2)) > 20) {
-            k2 *= -1;
-            RightLeg.physics_model.setWVelocity(2*k1 * alpha2);
-        }else {
-            RightLeg.physics_model.setWVelocity(k1 * alpha2);
-        }
-
+        // set new pos of point leg
+        CorrPos_P.setPos(new Point2D(x_,y_));
+    }
+    public List<Block> getAllBlocks(){
+        List<Block> blockList = new ArrayList<>();
+        blockList.add(leftLeg);
+        blockList.add(body);
+        blockList.add(rightLeg);
+        return blockList;
     }
 }
+

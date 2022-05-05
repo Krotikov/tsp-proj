@@ -1,72 +1,160 @@
 package Project.modules.Physics;
 
 import javafx.geometry.Point2D;
-import javafx.scene.shape.Rectangle;
-import javafx.scene.transform.Rotate;
-import javafx.scene.transform.Transform;
+import javafx.scene.shape.Polygon;
+import javafx.util.Pair;
 
-import java.util.ArrayList;
-import java.util.HashSet;
-import java.util.List;
-import java.util.Set;
+import java.util.*;
+
 
 public class Block {
-    public final Physics_Model physics_model;
+    public final PhysicModel physics_model;
+    private final List<Point> pointList = new ArrayList<>(); // angular points
+    private final List<Point> allPoints = new ArrayList<>(); // all points
     public final Set<Block> bindBlocks = new HashSet<>();
-    private final List<Point2D> normals = new ArrayList<>();
-    private final List<PairBlock> ArrayPairBlock = new ArrayList<>();
-    public String name;
+    public final double weight;
+    public final double height;
+    public final int pointsInSize;
 
-    Block(Rectangle rc, double m, Point2D V0) {
-        physics_model = new Physics_Model(rc, V0, m);
+    /*
+     * not use!
+     * */
+    private final List<Double> doublePointList = new ArrayList<>();
+    private final List<Point2D> point2DS = new ArrayList<>();
+
+
+    private final List<Point2D> normals = new ArrayList<>();
+    private final Polygon polygon = new Polygon();
+
+    public boolean isPowers = true;
+
+
+    Block(Point one, Point two, Point three, Point four, double mass,int n){
+        weight = Math.abs(two.circle.getCenterX() - one.circle.getCenterX());
+        height = Math.abs(three.circle.getCenterY() - one.circle.getCenterY());
+
+        pointsInSize = n;
+        pointList.add(one);
+        pointList.add(two);
+        pointList.add(three);
+        pointList.add(four);
         normals.add(new Point2D(0, -1));
         normals.add(new Point2D(1, 0));
         normals.add(new Point2D(0, 1));
         normals.add(new Point2D(-1, 0));
+        point2DS.add(new Point2D(one.circle.getCenterX(),one.circle.getCenterY() ));
+        point2DS.add(new Point2D(two.circle.getCenterX(),two.circle.getCenterY() ));
+        point2DS.add(new Point2D(three.circle.getCenterX(),three.circle.getCenterY() ));
+        point2DS.add(new Point2D(four.circle.getCenterX(),four.circle.getCenterY() ));
+        UpdateList();
+        double height = point2DS.get(0).subtract(point2DS.get(3)).magnitude();
+        double width = point2DS.get(0).subtract(point2DS.get(1)).magnitude();
+        physics_model = new PhysicModel(mass * (height * height + width * width)/12,mass, this);
+    };
+    Point2D centerBlock(){
+        return new Point2D(pointList.get(2).circle.getCenterX() - pointList.get(0).circle.getCenterX(),
+                pointList.get(2).circle.getCenterY() - pointList.get(0).circle.getCenterY());
+    }
+    List<Point2D> getNormals(){
+        getPoints();
+        Point2D vec;
+        for(int i = 0;i < point2DS.size();i++){
+            vec = point2DS.get((i + 1)%4).subtract(point2DS.get(i));
+            vec = new Point2D(vec.getY()*-1, vec.getX());
+            vec = vec.normalize();
+            vec = vec.multiply(-1);
+            normals.set(i,vec);
+        }
+        return normals;
     }
 
-    Point2D getXY(){
-        return getRectangle().getLocalToParentTransform().transform(new Point2D(getRectangle().getX(),getRectangle().getY()));
+    List<Point> getAllPointList(){
+        return allPoints;
+    }
+    Pair<Point,Point> getSide(int index){
+        return new Pair<>(pointList.get((index + 1) % 4),pointList.get(index % 4));
+    }
+    int getIndexPoint(Point point){
+        return pointList.indexOf(point);
+    }
+    int getIndexOfAllPoints(Point point){
+        return allPoints.indexOf(point);
     }
 
     /*
-     * Get rectangle points
+     * Move one point to point2D
      * */
-    List<Point2D> getPoints() {
-        Block block = this;
 
-        Transform transform = block.getRectangle().getLocalToParentTransform();
-
-        List<Point2D> Points = new ArrayList<>();
-
-        // левый верхний угол и правый верхний угол
-        Point2D point1 = new Point2D(block.getRectangle().getX(), block.getRectangle().getY());
-        Point2D point2 = new Point2D(block.getRectangle().getX() + block.getRectangle().getWidth(), block.getRectangle().getY());
-        point1 = transform.transform(point1);
-        point2 = transform.transform(point2);
-
-
-        // верхняя линия
-        Points.add(point1);
-        Points.add(point2);
-
-        // левый нижний угол и правый нижний угол
-        point1 = new Point2D(block.getRectangle().getX(), block.getRectangle().getY() + block.getRectangle().getHeight());
-        point2 = new Point2D(block.getRectangle().getX() + block.getRectangle().getWidth(), block.getRectangle().getY() + block.getRectangle().getHeight());
-        point1 = transform.transform(point1);
-        point2 = transform.transform(point2);
-
-        // верхняя линия
-        Points.add(point2);
-        Points.add(point1);
-
-        return Points;
+    public void switchPowers(){
+        isPowers = !isPowers;
     }
 
-    /*
-    * contains point or not
-    * */
-    public boolean contains(Point2D point){
+    void MoveTo(Point2D point2D){
+        if (!isPowers){
+            return;
+        }
+
+        Point2D start = getXY();
+        Point2D vec = point2D.subtract(start);
+        for(Point point: pointList){
+            point.circle.setCenterX(point.circle.getCenterX() + vec.getX());
+            point.circle.setCenterY(point.circle.getCenterY() + vec.getY());
+        }
+    }
+    void setGravity(boolean gravity){
+        if(gravity){
+            for (Point point:allPoints){
+                point.acc = new Point2D(0,PhysicModel.g);
+            }
+        }else{
+            for (Point point:allPoints){
+                point.acc = new Point2D(0,0);
+            }
+        }
+    }
+    boolean hasPoint(Point point){
+        for (Point point1 : allPoints){
+            if(point == point1){
+                return true;
+            }
+        }
+        return false;
+    }
+
+
+    void setVelocityPoint(Point2D velocity,int index){
+        if (!isPowers){
+            return;
+        }
+        pointList.get(index).setVelocity(velocity);
+    }
+    Point2D getXY(){
+        return new Point2D(pointList.get(0).circle.getCenterX(),pointList.get(0).circle.getCenterY());
+    }
+    void UpdateList(){
+        doublePointList.clear();
+        for(Point point: pointList){
+            doublePointList.add(point.getPos().getX());
+            doublePointList.add(point.getPos().getY());
+        }
+
+    }
+    List<Point> getPointList(){
+        return pointList;
+    }
+    List<Point2D> getPoints(){
+        double x,y;
+        for(int i = 0;i < pointList.size();i++){
+            x = pointList.get(i).circle.getCenterX();
+            y = pointList.get(i).circle.getCenterY();
+            point2DS.set(i,new Point2D(x,y));
+        }
+        return point2DS;
+    }
+    Polygon getPolygon(){
+        return polygon;
+    }
+    boolean contains(Point2D point){
         List<Point2D> corners = this.getPoints();
 
         // sides of the rectangle
@@ -91,58 +179,13 @@ public class Block {
             return true;
         }else return !(sca_one | sca_two | sca_three | sca_four);
     }
-
-
-    /*
-    * get point of center of block
-    * */
-    public Point2D CenterBlock() {
-        Rectangle rectangle = getRectangle();
-        Transform transform = rectangle.getLocalToParentTransform();
-        Point2D point1 = transform.transform(new Point2D(rectangle.getX(), rectangle.getY()));
-        Point2D point2 = transform.transform(new Point2D(rectangle.getX() + rectangle.getWidth(), rectangle.getY() + rectangle.getHeight()));
-        return point1.midpoint(point2);
+    void update(){
+        UpdateList();
+        polygon.getPoints().clear();
+        polygon.getPoints().addAll(doublePointList);
     }
-
-    /*
-    * get array of block normals
-    * */
-    public List<Point2D> getNormals() {
-        List<Point2D> normals_ = new ArrayList<>(this.normals);
-
-        // get rotate of block
-        Rotate rotate = new Rotate(getRectangle().getRotate(), 0, 0);
-
-
-        for (int i = 0; i < normals_.size(); i++) {
-            normals_.set(i, rotate.transform(normals_.get(i)));
-        }
-
-        return normals_;
-    }
-
-    /*
-    * get rectangle object of block
-    * */
-    public Rectangle getRectangle() {
-        return physics_model.getRectangle();
-    }
-
-    void connect(Block block,Point2D inter){
-        PairBlock pairBlock1 = new PairBlock(this,block,inter);
-        ArrayPairBlock.add(pairBlock1);
-        block.ArrayPairBlock.add(pairBlock1);
-    }
-    public void testRun(Block block){
-        for (PairBlock value : ArrayPairBlock) {
-            if(!value.hasBlock(block)) {
-                value.run(this);
-            }
-
-        }
-    }
-    public void run(double t) {
-        physics_model.run(t);
-
+    boolean contains(Point point){
+        Point2D point2D = new Point2D(point.circle.getCenterX(),point.circle.getCenterY());
+        return contains(point2D);
     }
 }

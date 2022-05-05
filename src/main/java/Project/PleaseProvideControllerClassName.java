@@ -4,11 +4,13 @@
 
 package Project;
 
-import Project.modules.Physics.Unity;
+import Project.modules.Physics.Game;
+import Project.modules.Physics.Stool;
 import javafx.animation.PauseTransition;
 import javafx.event.ActionEvent;
 import javafx.fxml.FXML;
 import javafx.fxml.Initializable;
+import javafx.geometry.Point2D;
 import javafx.scene.Group;
 import javafx.scene.SubScene;
 import javafx.scene.chart.LineChart;
@@ -38,7 +40,7 @@ enum Buttons{
 public class PleaseProvideControllerClassName implements Initializable {
     List<PauseTransition> pauseTransitionList = new ArrayList<>();
     List<String> styleList = new ArrayList<>();
-    private Unity unity;
+    private Game game;
 
     @FXML // fx:id="Reset"
     private Button Reset; // Value injected by FXMLLoader
@@ -57,7 +59,7 @@ public class PleaseProvideControllerClassName implements Initializable {
 
     @FXML
     void StartClick(ActionEvent event) {
-        unity.setDEBUG(false);
+        game.setDEBUG(false);
         start.setStyle("-fx-background-color: rgba(125,132,132,0.37);");
         pauseTransitionList.get(Buttons.START.ind).playFromStart();
     }
@@ -65,30 +67,34 @@ public class PleaseProvideControllerClassName implements Initializable {
     @FXML
     void StopClick(ActionEvent event) {
 
-        unity.setDEBUG(true);
+        game.setDEBUG(true);
         stop.setStyle("-fx-background-color: rgba(125,132,132,0.37);");
         pauseTransitionList.get(Buttons.STOP.ind).playFromStart();
     }
 
     @FXML
     void ResetClick(ActionEvent event) {
-        unity = new Unity();
-        unity.unObjects();
-        unity.RUN(this.SubScene);
+        game = new Game();
+        new Stool(new Point2D(150,260),300,50,50,200,game, Color.AQUAMARINE);
+        game.initObjects();
+        game.run(this.SubScene);
         Reset.setStyle("-fx-background-color: rgba(125,132,132,0.37);");
         pauseTransitionList.get(Buttons.RESET.ind).playFromStart();
     }
 
     @Override
     public void initialize(URL url, ResourceBundle resourceBundle) {
-        unity = new Unity();
-        SubScene.setFill(Color.WHITE);
-        SubScene.setOnKeyPressed(keyEvent -> {
-            System.out.println("3"
-            );
-        });
-        unity.unObjects();
-        unity.RUN(this.SubScene);
+        long start = System.currentTimeMillis();
+
+        long finish = System.currentTimeMillis();
+        long elapsed = finish - start;
+        System.out.println("Прошло времени, мс: " + elapsed);
+
+        game = new Game();
+        new Stool(new Point2D(150,260),300,50,50,200,game, Color.AQUAMARINE);
+        game.initObjects();
+        game.run(this.SubScene);
+        this.SubScene.setFill(Color.WHITE);
         addButtonsPause();
     }
 
