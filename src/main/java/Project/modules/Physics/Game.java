@@ -10,6 +10,7 @@ import javafx.scene.shape.Circle;
 import javafx.scene.shape.Shape;
 
 import java.util.ArrayList;
+import java.util.Collections;
 import java.util.List;
 
 
@@ -23,19 +24,15 @@ enum SHAPES{
 
 
 public class Game {
-    private double MouseX = 0;
-    private double MouseY = 0;
     public final List<Link> linkList = new ArrayList<>();
     private final List<Point> pointList = new ArrayList<>();
     private final List<Block> blocklist = new ArrayList<>();
-    final private List<Shape> shapes = new ArrayList<>();
     public final List<Stool> stoolList = new ArrayList<>();
     private final Group group = new Group();
     boolean DEBUG = false;
     boolean mouse = true;
     private final double MAX_TIME = 20;
     public Block bl;
-
 
 
     public void setStool(Stool stool){
@@ -46,21 +43,21 @@ public class Game {
         final double dt =  6 * 1./50;
         double t = 0;
         while(t  < MAX_TIME) {
-            for(int j = 0;j < 2;j++) {
                 Utility_Functions.sortOSX(blocklist);
                 Utility_Functions.sortOSY(blocklist);
-                t += dt / 4;
+                t += dt / 8;
                 for (Point point : pointList) {
                     point.run(dt);
                 }
                 for (Stool stool : stoolList) {
-                    stool.run(t);
+                    if(stool.isLife()) {
+                        stool.run(t);
+                    }
                 }
-                for (int i = 0; i < 5; i++) {
+                for (int i = 0; i < 7; i++) {
                     makeLink();
                     makeCollision(manifold);
                 }
-            }
         }
         List<Double> DistList = new ArrayList<>();
         for (Stool stool : stoolList) {
@@ -108,12 +105,12 @@ public class Game {
             }
         }
     }
+
     public void setDEBUG(boolean debug){
         DEBUG = debug;
     }
     public void run(SubScene stage){
         stage.setRoot(group);
-        //Scene scene = new Scene(group,SCENE_X,SCENE_Y);
         Manifold manifold = new Manifold();
 
 
@@ -122,22 +119,25 @@ public class Game {
             private double t = 0;
             @Override
             public void handle(long currentNanoTime) {
-                for(int j = 0;j < 2;j++) {
+                for(int j = 0;j < 4;j++) {
                     if (!DEBUG) {
                         Utility_Functions.sortOSX(blocklist);
                         Utility_Functions.sortOSY(blocklist);
-
-                        t += dt / 4;
-
+                        t += dt / 8;
                         for (Point point : pointList) {
                             point.run(dt);
                         }
                         for (Stool stool : stoolList) {
-                            stool.run(t);
+                            if(stool.isLife()) {
+                                stool.run(t);
+                            }
                         }
-                        for (int i = 0; i < 5; i++) {
+                        for (int i = 0; i < 7; i++) {
                             makeLink();
                             makeCollision(manifold);
+                        }
+                        for (Block block : blocklist) {
+                            block.update();
                         }
                     }
                 }
@@ -148,45 +148,6 @@ public class Game {
         for(Point point : pointList){
             group.getChildren().add(point.circle);
         }
-
-
-        // for testing /// // // for testing // /// //
-        //Text text = (Text) shapes.get(SHAPES.TEXT.id);
-        //scene.setOnMouseMoved(event -> {
-        //    String msg =
-        //            "x: " +event.getX()      + ", y: "       + event.getY()        ;
-        //    text.setText(msg);
-        //    MouseX = event.getX();
-        //    MouseY = event.getY();
-        //});
-        //group.getChildren().add(text);
-
-//        stage.setOnMouseClicked(event->{
-//            if (event.getButton() == MouseButton.PRIMARY){
-//                addBlock(new Point2D(event.getX(), event.getY()), 50, 50, 50, Color.AQUAMARINE);
-//            }
-//        });
-//
-//        // EVENT KEY
-        stage.setOnKeyPressed(keyEvent -> {
-            switch (keyEvent.getCode()) {
-                case C -> {
-                    DEBUG = !DEBUG;
-                }
-                case V ->{
-                    System.out.println(blocklist.get(0).getNormals());
-                }
-                case S -> {
-                    blocklist.get(0).MoveTo(new Point2D(10,10));
-                }
-                case O -> {
-                    blocklist.get(0).setVelocityPoint(new Point2D(-10,0),2);
-                }
-                case R->{
-                    mouse = !mouse;
-                }
-            }
-        });
 
     }
 
@@ -227,7 +188,7 @@ public class Game {
                 newBlock.getAllPointList().add(point1);
             }
             linkList.add(new Link(point1.circle, point.circle, weight / n));
-            addPoint(point1,onePoint,twoPoint,threePoint,fourPoint);
+            //addPoint(point1,onePoint,twoPoint,threePoint,fourPoint);
             point = point1;
         }
 
@@ -244,7 +205,6 @@ public class Game {
                 newBlock.getAllPointList().add(point1);
             }
             linkList.add(new Link(point1.circle, point.circle, height / n));
-            addPoint(point1,onePoint,twoPoint,threePoint,fourPoint);
             point = point1;
         }
 
@@ -261,7 +221,6 @@ public class Game {
                 newBlock.getAllPointList().add(point1);
             }
             linkList.add(new Link(point1.circle, point.circle, weight / n));
-            addPoint(point1,onePoint,twoPoint,threePoint,fourPoint);
             point = point1;
         }
 
@@ -278,7 +237,6 @@ public class Game {
                 newBlock.getAllPointList().add(point1);
             }
 
-            addPoint(point1,onePoint,twoPoint,threePoint,fourPoint);
             linkList.add(new Link(point1.circle, point.circle, height / n));
             point = point1;
         }

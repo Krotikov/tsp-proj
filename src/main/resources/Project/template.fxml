@@ -6,6 +6,7 @@
 <?import javafx.scene.chart.LineChart?>
 <?import javafx.scene.chart.NumberAxis?>
 <?import javafx.scene.control.Button?>
+<?import javafx.scene.control.TextField?>
 <?import javafx.scene.layout.ColumnConstraints?>
 <?import javafx.scene.layout.GridPane?>
 <?import javafx.scene.layout.Region?>
@@ -51,6 +52,10 @@
                   <Font name="Franklin Gothic Heavy" size="13.0" />
                </font>
             </Button>
+            <Button fx:id="Set" mnemonicParsing="false" onAction="#SetAction" prefHeight="26.0" prefWidth="75.0" text="Set" />
+            <TextField fx:id="SetField" onAction="#DefField" />
+            <Button fx:id="Def" mnemonicParsing="false" onAction="#DefAction" prefHeight="26.0" prefWidth="77.0" text="Def" />
+            <TextField fx:id="DefField" onAction="#DefField" />
          </children>
          <GridPane.margin>
             <Insets />

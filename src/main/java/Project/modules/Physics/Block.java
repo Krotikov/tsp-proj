@@ -67,6 +67,13 @@ public class Block {
         }
         return normals;
     }
+    Point2D getNormal(int index){
+        Point2D vec = pointList.get((index + 1) % 4).getPos().subtract(pointList.get(index).getPos());
+        vec = new Point2D(vec.getY()*-1, vec.getX());
+        vec = vec.normalize();
+        vec = vec.multiply(-1);
+        return vec;
+    }
 
     List<Point> getAllPointList(){
         return allPoints;
@@ -109,6 +116,7 @@ public class Block {
         }else{
             for (Point point:allPoints){
                 point.acc = new Point2D(0,0);
+                point.setOldPos(point.getPos());
             }
         }
     }
@@ -122,12 +130,6 @@ public class Block {
     }
 
 
-    void setVelocityPoint(Point2D velocity,int index){
-        if (!isPowers){
-            return;
-        }
-        pointList.get(index).setVelocity(velocity);
-    }
     Point2D getXY(){
         return new Point2D(pointList.get(0).circle.getCenterX(),pointList.get(0).circle.getCenterY());
     }

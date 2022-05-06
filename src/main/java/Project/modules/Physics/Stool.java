@@ -18,6 +18,7 @@ public class Stool {
     final Block body;
     final Game game;
     private Point2D normalDown;
+    private boolean life = true;
     private final double startPos;
     // parameters
     double alpha1 = 0.5;
@@ -62,7 +63,8 @@ public class Stool {
         Utility_Functions.bindBlocks(body,rightLeg);
         Utility_Functions.bindBlocks(leftLeg,rightLeg);
     }
-    public Stool(double param, Game game){
+    public Stool(double param, Game game, Color color){
+        setParameters(param);
         Point2D point2D = startPoint;
         this.startPos = point2D.getX();
         this.game =game;
@@ -107,24 +109,45 @@ public class Stool {
         this.alpha1 = parameters;
     }
     void run(double t){
-        normalDown = body.getNormals().get(2);
-        double phi1 = alpha1* 0.4 * Math.sin(t/1.2 * 2);
-        double phi2 = alpha1 * 0.7 *Math.sin(t/1.2 * 2);
+        life = constraint();
+        if(life) {
+            normalDown = body.getNormals().get(2);
+            double phi1 = alpha1 * 0.4 * Math.sin(t / 1.2 * 2);
+            double phi2 = alpha1 * 0.7 * Math.sin(t / 1.2 * 2);
 
-        // left leg ru
-        runLeg(phi1,leftLeg.getPointList().get(0),
-                leftLeg.getPointList().get(3)
-                );
+            // left leg run
+            runLeg(phi1, leftLeg.getPointList().get(0),
+                    leftLeg.getPointList().get(3)
+            );
 
-        //right leg run
-        runLeg(phi2,rightLeg.getPointList().get(1),
-                rightLeg.getPointList().get(2)
-        );
+            // right leg run
+            runLeg(phi2, rightLeg.getPointList().get(1),
+                    rightLeg.getPointList().get(2)
+            );
+        }else{
+            dieStool();
+        }
+
     }
-    double getDist(){
+    private boolean constraint(){
+        return PhysicModel.norms.get(1).dotProduct(body.getNormal(1)) >= 0.34;
+    }
+    public boolean isLife(){
+        return life;
+    }
+    private void dieStool(){
+        leftLeg.setGravity(false);
+        leftLeg.switchPowers();
+        rightLeg.setGravity(false);
+        rightLeg.switchPowers();
+        body.setGravity(false);
+        body.switchPowers();
+    }
+    public double getDist(){
         return body.getPointList().get(0).circle.getCenterX() - startPos;
     }
-    void runLeg(double phi,Point OS_P, Point CorrPos_P ){
+    public void runLeg(double phi,Point OS_P, Point CorrPos_P ){
+
 
         // os of rotate
         Point2D OS = OS_P.getPos();

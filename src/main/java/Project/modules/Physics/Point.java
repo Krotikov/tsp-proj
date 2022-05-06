@@ -39,6 +39,9 @@ public class Point {
         return velocity;
     }
 
+    void setOldPos(Point2D pos){
+        this.old_pos = pos;
+    }
     void setVelocity(Point2D velocity){
         this.velocity = velocity;
     }
