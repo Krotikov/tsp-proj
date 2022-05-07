@@ -36,7 +36,7 @@ class TestStoolOfGame extends RecursiveAction {
     HashMap<Integer,Double> totalVal; // map of result params
     int start;
     int end;
-    final int seqThread = 3;
+    final int seqThread = 2;
     TestStoolOfGame(List<Double> params, int start, int end, HashMap<Integer,Double> totalVal){
         this.params = params;
         this.start = start;

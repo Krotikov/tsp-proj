@@ -7,10 +7,11 @@ import javafx.scene.SubScene;
 import javafx.scene.paint.Color;
 import javafx.scene.paint.Paint;
 import javafx.scene.shape.Circle;
-import javafx.scene.shape.Shape;
+import javafx.scene.shape.Rectangle;
+import javafx.scene.text.Font;
+import javafx.scene.text.Text;
 
 import java.util.ArrayList;
-import java.util.Collections;
 import java.util.List;
 
 
@@ -29,35 +30,58 @@ public class Game {
     private final List<Block> blocklist = new ArrayList<>();
     public final List<Stool> stoolList = new ArrayList<>();
     private final Group group = new Group();
+    private Camera camera = null;
+    private Block platform;
     boolean DEBUG = false;
-    boolean mouse = true;
-    private final double MAX_TIME = 20;
-    public Block bl;
+    private static final double MAX_TIME = 20;
 
-
+    private void setWorldForView(){
+        final int weight = 50;
+        final int high = 100;
+        final int startInt = 1000;
+        Rectangle rectangle;
+        Text text;
+        Font font = new Font(30);
+        for(int i = 0;i < 100;i++) {
+            rectangle = new Rectangle(startInt + i*1000, platform.getXY().getY() - high, weight, high);
+            rectangle.setFill(Color.BROWN);
+            text = new Text(rectangle.getX() - 10,rectangle.getY() - 10,Integer.toString((startInt + i * 1000)/100));
+            text.setFill(Color.GREEN);
+            text.setFont(new Font(30));
+            group.getChildren().add(rectangle);
+            group.getChildren().add(text);
+        }
+    }
     public void setStool(Stool stool){
         stoolList.add(stool);
     }
+    public void setCamera(Camera camera){ this.camera = camera;}
     public List<Double> TrainRun(){
         Manifold manifold = new Manifold();
         final double dt =  6 * 1./50;
         double t = 0;
+        boolean life;
         while(t  < MAX_TIME) {
-                Utility_Functions.sortOSX(blocklist);
-                Utility_Functions.sortOSY(blocklist);
-                t += dt / 8;
-                for (Point point : pointList) {
-                    point.run(dt);
+            Utility_Functions.sortOSX(blocklist);
+            Utility_Functions.sortOSY(blocklist);
+            t += dt / 8;
+            for (Point point : pointList) {
+                point.run(dt);
+            }
+            life = true;
+            for (Stool stool : stoolList) {
+                if(stool.isLife()) {
+                    stool.run(t);
+                    life = false;
                 }
-                for (Stool stool : stoolList) {
-                    if(stool.isLife()) {
-                        stool.run(t);
-                    }
-                }
-                for (int i = 0; i < 7; i++) {
-                    makeLink();
-                    makeCollision(manifold);
-                }
+            }
+            if(life){
+                break;
+            }
+            for (int i = 0; i < 7; i++) {
+                makeLink();
+                makeCollision(manifold);
+            }
         }
         List<Double> DistList = new ArrayList<>();
         for (Stool stool : stoolList) {
@@ -66,22 +90,19 @@ public class Game {
         return DistList;
     }
     public void initObjects(){
-        Block platform = addBlock(
+        platform = addBlock(
                 new Point2D(-500,500),
-                5000,
+                1000000,
                 100,
                 1000000,
                 Color.GREEN
         );
-        platform.setGravity(false);
+        platform.setWeightlessness();
         platform.switchPowers();
         Utility_Functions.bindStools(stoolList);
 
     }
-
-
     private void makeCollision(Manifold manifold){
-
         for (int k1 = 0; k1 < blocklist.size(); k1++){
             for (int k2 = 0; k2 < blocklist.size(); k2++){
                 if (k1 == k2){
@@ -97,7 +118,6 @@ public class Game {
             }
         }
     }
-
     private void makeLink(){
         for (int i = 0; i < 5; i++) {
             for (Link link : linkList) {
@@ -105,13 +125,17 @@ public class Game {
             }
         }
     }
-
     public void setDEBUG(boolean debug){
         DEBUG = debug;
     }
     public void run(SubScene stage){
         stage.setRoot(group);
+        setWorldForView();
         Manifold manifold = new Manifold();
+
+        if(camera != null) {
+            camera.setGroup(group);
+        }
 
 
         new AnimationTimer(){
@@ -123,7 +147,11 @@ public class Game {
                     if (!DEBUG) {
                         Utility_Functions.sortOSX(blocklist);
                         Utility_Functions.sortOSY(blocklist);
+
                         t += dt / 8;
+
+                        makeLink();
+
                         for (Point point : pointList) {
                             point.run(dt);
                         }
@@ -136,6 +164,12 @@ public class Game {
                             makeLink();
                             makeCollision(manifold);
                         }
+
+                        // update camera pos
+                        if(camera != null) {
+                            camera.update();
+                        }
+                        // paint
                         for (Block block : blocklist) {
                             block.update();
                         }
@@ -150,10 +184,9 @@ public class Game {
         }
 
     }
-
     public Block addBlock(Point2D one, double weight, double height, double mass, Paint paint){
         final double n = 4;
-        final double rad = 2;
+        final double rad = 0;
 
 
         Point2D two = new Point2D(one.getX() + weight, one.getY());
@@ -167,9 +200,6 @@ public class Game {
 
         Block newBlock = new Block(onePoint,twoPoint,threePoint,fourPoint,mass, (int) n);
         newBlock.getAllPointList().add(onePoint);
-        newBlock.getAllPointList().add(twoPoint);
-        newBlock.getAllPointList().add(threePoint);
-        newBlock.getAllPointList().add(fourPoint);
 
 
 
@@ -178,7 +208,7 @@ public class Game {
         Point2D pointk;
         point = onePoint;
 
-        for(int i =1; i <= n;i++) {
+        for(int i = 1; i <= n;i++) {
             if(i == n){
                 point1 = twoPoint;
             }else {
@@ -188,9 +218,10 @@ public class Game {
                 newBlock.getAllPointList().add(point1);
             }
             linkList.add(new Link(point1.circle, point.circle, weight / n));
-            //addPoint(point1,onePoint,twoPoint,threePoint,fourPoint);
             point = point1;
         }
+
+        newBlock.getAllPointList().add(twoPoint);
 
         // right
         point = twoPoint;
@@ -208,6 +239,8 @@ public class Game {
             point = point1;
         }
 
+        newBlock.getAllPointList().add(threePoint);
+
         // down
         point = threePoint;
 
@@ -224,6 +257,7 @@ public class Game {
             point = point1;
         }
 
+        newBlock.getAllPointList().add(fourPoint);
         // left
         point = fourPoint;
 
@@ -275,5 +309,4 @@ public class Game {
         linkList.add(new Link(point.circle, twoPoint.circle, point.getPos().subtract(twoPoint.getPos()).magnitude()));
         linkList.add(new Link(point.circle, onePoint.circle, point.getPos().subtract(onePoint.getPos()).magnitude()));
     }
-
 }

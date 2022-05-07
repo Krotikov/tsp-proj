@@ -47,42 +47,6 @@ public class Manifold {
     }
 
     /*
-     * get the deepest point for block of normal
-     * */
-    private Point getDepthPoint(List<Point> points,Point2D normal,Block block){
-        double min_val = Double.NaN;
-        double val;
-        Point bestPoint = null;
-        for(Point point : points){
-            if(block.hasPoint(point)) {
-                val = point.getPos().dotProduct(normal);
-                if (Double.isNaN(min_val) || val < min_val) {
-                    min_val = val;
-                    bestPoint = point;
-                }
-            }
-        }
-        return bestPoint;
-    }
-
-    /*
-     * get the deepest point of normal
-     * */
-    private Point getDepthPoint(List<Point> points,Point2D normal){
-        double min_val = points.get(0).getPos().dotProduct(normal);
-        double val;
-        Point bestPoint = points.get(0);
-        for(Point point : points){
-            val = point.getPos().dotProduct(normal);
-            if(val < min_val){
-                min_val = val;
-                bestPoint = point;
-            }
-        }
-        return bestPoint;
-    }
-
-    /*
      * get side of contact
      * */
     private Pair<Point,Point> getSide(Point contact,Point2D normal){

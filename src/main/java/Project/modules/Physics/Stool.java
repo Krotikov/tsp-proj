@@ -12,7 +12,7 @@ public class Stool {
     static final double heightBody = 50;
     static final double weightLeg = 50;
     static final double heightLeg = 200;
-    static final Color color = Color.AQUAMARINE;
+    public Color color = Color.AQUAMARINE;
     final Block leftLeg;
     final Block rightLeg;
     final Block body;
@@ -24,6 +24,7 @@ public class Stool {
     double alpha1 = 0.5;
 
     public Stool(Point2D point2D, double weightBody, double heightBody, double weightLeg, double heightLeg, Game game, Color color){
+        this.color = color;
         this.startPos = point2D.getX();
         this.game =game;
         this.leftLeg = game.addBlock(
@@ -58,12 +59,29 @@ public class Stool {
                 0
         ));
         game.setStool(this);
-        this.game.bl = body;
         Utility_Functions.bindBlocks(leftLeg,body);
         Utility_Functions.bindBlocks(body,rightLeg);
         Utility_Functions.bindBlocks(leftLeg,rightLeg);
     }
+
+    public Block getBody() {
+        return body;
+    }
+
+    public Block getLeftLeg() {
+        return leftLeg;
+    }
+
+    public Block getRightLeg() {
+        return rightLeg;
+    }
+
+    public Color getColor() {
+        return color;
+    }
+
     public Stool(double param, Game game, Color color){
+        this.color = color;
         setParameters(param);
         Point2D point2D = startPoint;
         this.startPos = point2D.getX();
@@ -100,7 +118,6 @@ public class Stool {
                 0
         ));
         game.setStool(this);
-        this.game.bl = body;
         Utility_Functions.bindBlocks(leftLeg,body);
         Utility_Functions.bindBlocks(body,rightLeg);
         Utility_Functions.bindBlocks(leftLeg,rightLeg);
@@ -112,8 +129,8 @@ public class Stool {
         life = constraint();
         if(life) {
             normalDown = body.getNormals().get(2);
-            double phi1 = alpha1 * 0.4 * Math.sin(t / 1.2 * 2);
             double phi2 = alpha1 * 0.7 * Math.sin(t / 1.2 * 2);
+            double phi1 = alpha1 * 0.4 * Math.sin(t / 1.2 * 2);
 
             // left leg run
             runLeg(phi1, leftLeg.getPointList().get(0),
@@ -130,17 +147,17 @@ public class Stool {
 
     }
     private boolean constraint(){
-        return PhysicModel.norms.get(1).dotProduct(body.getNormal(1)) >= 0.34;
+        return PhysicModel.norms.get(1).dotProduct(body.getNormal(1)) >= -1;
     }
     public boolean isLife(){
         return life;
     }
     private void dieStool(){
-        leftLeg.setGravity(false);
+        leftLeg.setWeightlessness();
         leftLeg.switchPowers();
-        rightLeg.setGravity(false);
+        rightLeg.setWeightlessness();
         rightLeg.switchPowers();
-        body.setGravity(false);
+        body.setWeightlessness();
         body.switchPowers();
     }
     public double getDist(){
@@ -151,7 +168,7 @@ public class Stool {
 
         // os of rotate
         Point2D OS = OS_P.getPos();
-        Point2D startPoint = OS.add(normalDown.multiply(leftLeg.height));
+        Point2D startPoint = OS.add(normalDown.multiply(leftLeg.getHeight()));
         Point2D delta = OS.subtract(new Point2D(0,0));
 
         // move OS to x = 0 y = 0 and rotate
