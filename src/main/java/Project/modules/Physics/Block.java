@@ -12,8 +12,8 @@ public class Block {
     private final List<Point> pointList = new ArrayList<>(); // angular points
     private final List<Point> allPoints = new ArrayList<>(); // all points
     public final Set<Block> bindBlocks = new HashSet<>();
-    public final double weight;
-    public final double height;
+    private final double weight;
+    private final double height;
     public final int pointsInSize;
 
     /*
@@ -24,7 +24,7 @@ public class Block {
 
 
     private final List<Point2D> normals = new ArrayList<>();
-    private final Polygon polygon = new Polygon();
+    private Polygon polygon = new Polygon();
 
     public boolean isPowers = true;
 
@@ -51,7 +51,7 @@ public class Block {
         double width = point2DS.get(0).subtract(point2DS.get(1)).magnitude();
         physics_model = new PhysicModel(mass * (height * height + width * width)/12,mass, this);
     };
-    Point2D centerBlock(){
+    public Point2D centerBlock(){
         return new Point2D(pointList.get(2).circle.getCenterX() - pointList.get(0).circle.getCenterX(),
                 pointList.get(2).circle.getCenterY() - pointList.get(0).circle.getCenterY());
     }
@@ -66,6 +66,13 @@ public class Block {
             normals.set(i,vec);
         }
         return normals;
+    }
+    Point2D getNormal(int index){
+        Point2D vec = pointList.get((index + 1) % 4).getPos().subtract(pointList.get(index).getPos());
+        vec = new Point2D(vec.getY()*-1, vec.getX());
+        vec = vec.normalize();
+        vec = vec.multiply(-1);
+        return vec;
     }
 
     List<Point> getAllPointList(){
@@ -101,15 +108,10 @@ public class Block {
             point.circle.setCenterY(point.circle.getCenterY() + vec.getY());
         }
     }
-    void setGravity(boolean gravity){
-        if(gravity){
-            for (Point point:allPoints){
-                point.acc = new Point2D(0,PhysicModel.g);
-            }
-        }else{
-            for (Point point:allPoints){
-                point.acc = new Point2D(0,0);
-            }
+    void setWeightlessness(){
+        for (Point point:allPoints){
+            point.acc = new Point2D(0,0);
+            point.setOldPos(point.getPos());
         }
     }
     boolean hasPoint(Point point){
@@ -122,12 +124,6 @@ public class Block {
     }
 
 
-    void setVelocityPoint(Point2D velocity,int index){
-        if (!isPowers){
-            return;
-        }
-        pointList.get(index).setVelocity(velocity);
-    }
     Point2D getXY(){
         return new Point2D(pointList.get(0).circle.getCenterX(),pointList.get(0).circle.getCenterY());
     }
@@ -139,7 +135,10 @@ public class Block {
         }
 
     }
-    List<Point> getPointList(){
+    public List<Point> getAllPoints(){
+        return allPoints;
+    }
+    public List<Point> getPointList(){
         return pointList;
     }
     List<Point2D> getPoints(){
@@ -151,7 +150,7 @@ public class Block {
         }
         return point2DS;
     }
-    Polygon getPolygon(){
+    public Polygon getPolygon(){
         return polygon;
     }
     boolean contains(Point2D point){
@@ -187,5 +186,13 @@ public class Block {
     boolean contains(Point point){
         Point2D point2D = new Point2D(point.circle.getCenterX(),point.circle.getCenterY());
         return contains(point2D);
+    }
+
+    public double getWeight() {
+        return weight;
+    }
+
+    public double getHeight() {
+        return height;
     }
 }

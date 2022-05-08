@@ -2,11 +2,19 @@ package Project.modules.Physics;
 
 import javafx.geometry.Point2D;
 
+import java.util.ArrayList;
+import java.util.Arrays;
 import java.util.List;
 
 public class PhysicModel {
     static final double g = 9.8 * 0.1;
     static final double FrictionCoefficient = 1;
+    static final List<Point2D> norms = List.of(
+            new Point2D(0, -1),
+            new Point2D(1, 0),
+            new Point2D(0, 1),
+            new Point2D(-1, 0)
+            );
     final double  mass;
     final double inertia;
     public final double restitution = 0.0;
