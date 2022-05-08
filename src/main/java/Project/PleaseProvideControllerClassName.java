@@ -6,6 +6,10 @@ package Project;
 
 import Project.modules.Physics.Game;
 import Project.modules.Physics.Stool;
+import Project.modules.evolution.Evolution;
+import Project.modules.evolution.EvolutionAlg;
+import Project.modules.evolution.genome.Genome;
+import Project.modules.evolution.genome.Genomes;
 import javafx.animation.PauseTransition;
 import javafx.event.ActionEvent;
 import javafx.fxml.FXML;
@@ -75,7 +79,12 @@ public class PleaseProvideControllerClassName implements Initializable {
     @FXML
     void ResetClick(ActionEvent event) {
         game = new Game();
-        new Stool(new Point2D(150,260),300,50,50,200,game, Color.AQUAMARINE);
+        Evolution alg = new EvolutionAlg();
+        var result = alg.hasNext();
+        List<Genome> genomes = alg.next();
+        for(Genome genome: genomes){
+            new Stool(new Point2D(150,260),300,50,50,200,game, genome.params(),  Color.AQUAMARINE);
+        }
         game.initObjects();
         game.run(this.SubScene);
         Reset.setStyle("-fx-background-color: rgba(125,132,132,0.37);");
@@ -91,7 +100,12 @@ public class PleaseProvideControllerClassName implements Initializable {
         System.out.println("Прошло времени, мс: " + elapsed);
 
         game = new Game();
-        new Stool(new Point2D(150,260),300,50,50,200,game, Color.AQUAMARINE);
+        Evolution alg = new EvolutionAlg();
+        var result = alg.hasNext();
+        List<Genome> genomes = alg.next();
+        for(Genome genome: genomes){
+            new Stool(new Point2D(150,260),300,50,50,200,game, genome.params(),  Color.RED);
+        }
         game.initObjects();
         game.run(this.SubScene);
         this.SubScene.setFill(Color.WHITE);

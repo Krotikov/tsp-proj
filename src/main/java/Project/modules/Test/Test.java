@@ -2,18 +2,16 @@ package Project.modules.Test;
 
 import Project.modules.Physics.Game;
 import Project.modules.Physics.Stool;
-import javafx.geometry.Point2D;
-import javafx.scene.paint.Color;
 
 import java.util.ArrayList;
 import java.util.List;
+import java.util.Map;
 import java.util.concurrent.ForkJoinPool;
 import java.util.concurrent.RecursiveAction;
-import java.util.concurrent.RecursiveTask;
 
 public class Test {
-    List<Double> paramList = new ArrayList<>();
-    void addStool(double a){
+    List<Map<Character, Double>> paramList = new ArrayList<>();
+    void addStool(Map<Character, Double> a){
         paramList.add(a);
     }
     List<Double> test(){
@@ -25,11 +23,11 @@ public class Test {
     }
 }
 class TestStoolOfGame extends RecursiveAction {
-    List<Double> params;
+    List<Map<Character, Double>> params;
     int start;
     int end;
     final int seqThread = 2;
-    TestStoolOfGame(List<Double> params, int start, int end){
+    TestStoolOfGame(List<Map<Character, Double>> params, int start, int end){
         this.params = params;
         this.start = start;
         this.end = end;
@@ -41,7 +39,7 @@ class TestStoolOfGame extends RecursiveAction {
         if((end - start) < seqThread){
             for(int i = start; i < end;i++){
                 game = new Game();
-                stool = new Stool(params.get(i),game);
+                new Stool(params, game);
                 game.initObjects();
                 System.out.println(game.TrainRun());
             }
