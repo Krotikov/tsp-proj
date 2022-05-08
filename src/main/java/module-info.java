@@ -1,10 +1,10 @@
 module com.example.demo {
-
-
     requires javafx.controls;
     requires javafx.fxml;
     requires javafx.graphics;
 
-    opens com.example.demo to javafx.fxml;
-    exports com.example.demo;
+    opens Project.modules.Physics to javafx.fxml;
+    exports Project.modules.Physics;
+    exports Project;
+    opens Project to javafx.fxml;
 }
