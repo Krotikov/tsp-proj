@@ -155,7 +155,7 @@ public class Stool {
 
     }
     private boolean constraint(){
-        return PhysicModel.norms.get(1).dotProduct(body.getNormal(1)) >= -1;
+        return PhysicModel.norms.get(1).dotProduct(body.getNormal(1)) >= 0.34;
     }
     public boolean isLife(){
         return life;
