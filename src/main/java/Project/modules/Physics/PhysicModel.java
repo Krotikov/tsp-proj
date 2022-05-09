@@ -2,8 +2,6 @@ package Project.modules.Physics;
 
 import javafx.geometry.Point2D;
 
-import java.util.ArrayList;
-import java.util.Arrays;
 import java.util.List;
 
 public class PhysicModel {
@@ -21,15 +19,12 @@ public class PhysicModel {
     public final double sFriction  = 0.8;
     public final double dFriction = 0.2;
     public final Block block;
-    public List<Point> contacts;
 
     PhysicModel(double inertia,double mass, Block block){
         this.inertia = inertia;
         this.mass = mass;
         this.block = block;
     }
-
-
 
     /*
      * apply the previously calculated momentum to the body

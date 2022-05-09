@@ -16,15 +16,15 @@ public class GenomeConfig {
     public static final Double MIN_VALUE_O=-Math.PI;
 
     public static final Double MAX_VALUE_m=0.;
-    public static final Double MIN_VALUE_m=-0.11;
+    public static final Double MIN_VALUE_m=-0.09;
 
-    public static final Double MAX_VALUE_M=0.11;
+    public static final Double MAX_VALUE_M=0.09;
 
-    public static final int POPULATION_SIZE = 1;
+    public static final int POPULATION_SIZE = 24;
     public static final int MAX_EPOCH = 10;
 
     public static final Double H_DIFF_WEIGHT = 0.1;
-    public static final Double MAX_TIME =  3600.;
+    public static final Double MAX_TIME =  20.;
     public static final Double TIME_WEIGHT = 0.1;
 
     public static final Integer LEG_LENGTH = 5;

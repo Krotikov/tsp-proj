@@ -9,7 +9,6 @@ import java.util.List;
 public interface Evolution extends Iterator<List<Genome>> {
 
     Genome bestBy(List<Score> results);
-
     @Override
     boolean hasNext();
 

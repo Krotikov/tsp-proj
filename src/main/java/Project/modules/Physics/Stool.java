@@ -13,7 +13,7 @@ public class Stool {
     static final double heightBody = 50;
     static final double weightLeg = 50;
     static final double heightLeg = 200;
-    public Color color = Color.AQUAMARINE;
+    public Color color;
     final Block leftLeg;
     final Block rightLeg;
     final Block body;
@@ -22,16 +22,11 @@ public class Stool {
     private boolean life = true;
     private final double startPos;
     // parameters
-    private final List<Map<Character, Double>> genome;
-    double alpha1 = 0.5;
+    private final List<Map<Character, Double>> genome = new ArrayList<>();
 
     public Stool(Point2D point2D, double weightBody, double heightBody, double weightLeg, double heightLeg, Game game, Color color){
         this.color = color;
         this.startPos = point2D.getX();
-
-        this.genome = new ArrayList<>();
-        genome.add(legs.get("left").getGens());
-        genome.add(legs.get("right").getGens());
 
         this.game = game;
         this.leftLeg = game.addBlock(
@@ -89,15 +84,17 @@ public class Stool {
 
 
     double evaluateAt(Map<Character, Double> gens, double time) {
-        return (gens.get('M') - gens.get('m')) / 2 * (1 + Math.sin((time + gens.get('o')) * Math.PI * 2 / gens.get('p'))) + gens.get('m');
+        return (gens.get('M') - gens.get('m')) / 2 * (1 + Math.sin((time) * Math.PI * 2 / gens.get('p'))) + gens.get('m');
     }
 
 
-    public Stool(double param, Game game, Color color){
+    public Stool(Map<String, LegGenome> legs, Game game, Color color){
         this.color = color;
-        setParameters(param);
+
+        this.genome.add(legs.get("left").getGens());
+        this.genome.add(legs.get("right").getGens());
+
         Point2D point2D = startPoint;
-        this.genome = param;
         this.startPos = point2D.getX();
         this.game = game;
         this.leftLeg = game.addBlock(
@@ -137,15 +134,11 @@ public class Stool {
         Utility_Functions.bindBlocks(leftLeg,rightLeg);
     }
 
-    void setParameters(double parameters) {
-        this.alpha1 = parameters;
-    }
-
     void run(double t){
         life = constraint();
         if(life) {
             normalDown = body.getNormals().get(2);
-            double phi1 = evaluateAt(genome.get(0), t);
+            double phi1 = -evaluateAt(genome.get(0), t);
             double phi2 = evaluateAt(genome.get(1), t);
             // left leg run
             runLeg(phi1, leftLeg.getPointList().get(0),
@@ -180,8 +173,6 @@ public class Stool {
         return body.getPointList().get(0).circle.getCenterX() - startPos;
     }
     public void runLeg(double phi,Point OS_P, Point CorrPos_P ){
-
-
         // os of rotate
         Point2D OS = OS_P.getPos();
         Point2D startPoint = OS.add(normalDown.multiply(leftLeg.getHeight()));

@@ -26,7 +26,7 @@ public class Point {
         if (old_pos == null) {
             old_pos = pos;
         }
-        new_pos = pos.multiply(2 - tr).subtract(old_pos.multiply(1 - tr)).add(acc.multiply(dt * dt));
+        new_pos = pos.multiply(2).subtract(old_pos.multiply(1)).add(acc.multiply(dt * dt));
         velocity = new_pos.subtract(old_pos).multiply(1 / (2 * dt));
 
         old_pos = pos;

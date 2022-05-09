@@ -21,15 +21,19 @@ import java.util.stream.Stream;
  * @author Андрей и Иван
  */
 public class EvolutionAlg implements Evolution {
+    private final static Evolution instance = new EvolutionAlg();
     private final Genomes genomes; //текущий геном
     private List<Double> genomeScores; //результаты для предыдущей эпохи
     private int epoch; //эпоха
 
-    public EvolutionAlg() {
+    private EvolutionAlg() {
         epoch = 0;
-        //размер популяции
         int pSize = GenomeConfig.POPULATION_SIZE;
         genomes = new Genomes(pSize);
+    }
+
+    public static Evolution getInstance() {
+        return instance;
     }
 
     private void update() {
@@ -50,7 +54,7 @@ public class EvolutionAlg implements Evolution {
         Map<String, LegGenome> secondLegs = second.params();
 
         for (String leg : firstLegs.keySet()) {
-            int swapNumber = CustomRandom.inRange(0, GenomeConfig.LEG_PARAMS_COUNTS - 1); // - 1 чтобы не возникло бессмыссленого обемна ногамии
+            int swapNumber = CustomRandom.inRange(1, GenomeConfig.LEG_PARAMS_COUNTS - 1); // - 1 чтобы не возникло бессмыссленого обемна ногамии
 
             List<Character> swapParams = Stream.generate(() -> CustomRandom.from(GenomeConfig.LEG_LIST_PARAMS))
                     .limit(swapNumber)
@@ -66,12 +70,11 @@ public class EvolutionAlg implements Evolution {
 
     private List<Utils.PairGenomes> makePairs(List<Double> probs) {
         List<Utils.PairGenomes> pairs = new ArrayList<>();
-        while (pairs.size() <= GenomeConfig.POPULATION_SIZE / 2) {
+        while (pairs.size() < GenomeConfig.POPULATION_SIZE / 2) {
 
             double sum = 0.;
             int i, j;
             double r1 = CustomRandom.inRange(0., 1.);
-            double r2 = CustomRandom.inRange(0., 1.);
 
             for (i = 0; i < probs.size(); i++) {
                 sum += probs.get(i);
@@ -79,14 +82,13 @@ public class EvolutionAlg implements Evolution {
                     break;
                 }
             }
-            j = i;
-            while (j == i) {
-                sum = 0;
-                for (j = 0; j < probs.size(); j++) {
-                    sum += probs.get(j);
-                    if (sum > r2) {
-                        break;
-                    }
+            double r2 = CustomRandom.inRange(0., 1. - probs.get(i));
+            sum = 0;
+            for (j = 0; j < probs.size(); j++) {
+                if(j == i) continue;
+                sum += probs.get(j);
+                if (sum > r2) {
+                    break;
                 }
             }
             pairs.add(new Utils.PairGenomes(genomes.get(i), genomes.get(j)));

@@ -8,6 +8,10 @@ import Project.modules.Physics.Camera;
 import Project.modules.Physics.Game;
 import Project.modules.Physics.Point;
 import Project.modules.Physics.Stool;
+import Project.modules.Test.TestParallel;
+import Project.modules.evolution.Evolution;
+import Project.modules.evolution.genome.Genome;
+import Project.modules.evolution.score.Score;
 import javafx.animation.PauseTransition;
 import javafx.collections.FXCollections;
 import javafx.event.ActionEvent;
@@ -23,14 +27,15 @@ import javafx.util.Duration;
 import java.net.URL;
 import java.util.*;
 
-enum Buttons{
+enum Buttons {
     RESET(0),
     START(1),
     STOP(2),
     DEF(3),
     SET(4);
     final public int ind;
-    Buttons(int ind){
+
+    Buttons(int ind) {
         this.ind = ind;
     }
 }
@@ -38,7 +43,7 @@ enum Buttons{
 public class PleaseProvideControllerClassName implements Initializable {
     List<PauseTransition> pauseTransitionList = new ArrayList<>();
     List<String> styleList = new ArrayList<>();
-    Map<String,Stool> stoolMap = new HashMap<>();
+    Map<String, Stool> stoolMap = new HashMap<>();
     private Game game;
     private Stool stool;
     private Camera camera;
@@ -98,13 +103,13 @@ public class PleaseProvideControllerClassName implements Initializable {
         String num = SetField.getText();
         try {
             int val = Integer.parseInt(num);
-            if(val > 100){
+            if (val > 100) {
                 SetField.setText(">100!");
             }
-            if(val < 0){
+            if (val < 0) {
                 SetField.setText("<0!");
             }
-        }catch (NumberFormatException e){
+        } catch (NumberFormatException e) {
             SetField.setText("Wrong format ");
         }
     }
@@ -116,17 +121,17 @@ public class PleaseProvideControllerClassName implements Initializable {
 
         String[] nums = DefField.getText().split(",");
         try {
-            if(nums.length > 2){
+            if (nums.length > 2) {
                 DefField.setText("too much numbers");
-            }else {
+            } else {
                 double val1 = Double.parseDouble(nums[0]);
                 double val2 = Double.parseDouble(nums[1]);
                 System.out.println(val1);
                 System.out.println(val2);
             }
-        }catch (ArrayIndexOutOfBoundsException e){
+        } catch (ArrayIndexOutOfBoundsException e) {
             DefField.setText("few numbers ");
-        }catch (NumberFormatException e){
+        } catch (NumberFormatException e) {
             DefField.setText("Wrong format");
         }
 
@@ -167,11 +172,11 @@ public class PleaseProvideControllerClassName implements Initializable {
             @Override
             protected void updateItem(Label item, boolean empty) {
                 super.updateItem(item, empty);
-                if(item != null) {
+                if (item != null) {
                     setText(item.getText());
-                    Color color =  stoolMap.get(item.getText()).getColor();
-                    setStyle("-fx-background-color : rgb(" + color.getRed() *255 + ","
-                            + color.getGreen() * 255 + "," + color.getBlue()*255 + ");");
+                    Color color = stoolMap.get(item.getText()).getColor();
+                    setStyle("-fx-background-color : rgb(" + color.getRed() * 255 + ","
+                            + color.getGreen() * 255 + "," + color.getBlue() * 255 + ");");
                 }
             }
         });
@@ -181,29 +186,44 @@ public class PleaseProvideControllerClassName implements Initializable {
         addButtonsPause();
     }
 
-    private Point ViewStoolPoint(Stool stool){
+    private Point ViewStoolPoint(Stool stool) {
         return stool.getBody().getAllPoints().get(0);
     }
-    private void initAll(){
+
+    private void initAll() {
 
         stoolMap.clear();
         game = new Game();
         camera = new Camera(game);
 
 
+        Evolution alg1 = Game.getAlgorithm();
+        //Evolution alg2 = Game.getAlgorithm();
 
-        // add two Stools to project
-        Stool stool1 = new Stool(1.20,game,Color.AQUAMARINE);
-        stoolMap.put(Legend.getItems().get(0).getText(),stool1);
-        Stool stool2 = new Stool(0.1,game,Color.BLANCHEDALMOND);
-        stoolMap.put(Legend.getItems().get(1).getText(),stool2);
+        if (alg1.hasNext()) {
+            List<Genome> genomes1 = alg1.next();
+            //List<Genome> genomes2 = alg2.next();
+
+            TestParallel test1 = new TestParallel(genomes1);
+            //TestParallel test2 = new TestParallel(genomes2);
+            List<Score> results = test1.run();
+            Genome best = alg1.bestBy(results);
+
+            // add two Stools to project
+            Stool stool1 = new Stool(best.params(), game, Color.AQUAMARINE);
+            stoolMap.put(Legend.getItems().get(0).getText(), stool1);
+            Stool stool2 = new Stool(best.params(), game, Color.BLANCHEDALMOND);
+            stoolMap.put(Legend.getItems().get(1).getText(), stool2);
+        }
+
 
 
         game.initObjects();
         game.run(this.SubScene);
     }
-    private void addButtonsPause(){
-        for(int i = 0;i < Buttons.values().length;i++) {
+
+    private void addButtonsPause() {
+        for (int i = 0; i < Buttons.values().length; i++) {
             pauseTransitionList.add(new PauseTransition(Duration.seconds(0.2)));
         }
         styleList.add(Reset.getStyle());

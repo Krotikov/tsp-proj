@@ -32,14 +32,14 @@ public class Manifold {
         Triple<Double,Point2D,Short> length_and_normal2 = FindAxisLeastPenetration(B,A);
 
         // choose max deep
-        if (length_and_normal1.getOne() > length_and_normal2.getOne()) {
-            normal = length_and_normal1.getTwo();
-            displacement = length_and_normal1.getOne();
+        if (length_and_normal1.one() > length_and_normal2.one()) {
+            normal = length_and_normal1.two();
+            displacement = length_and_normal1.one();
 
         }
         else {
-            normal = length_and_normal2.getTwo();
-            displacement = length_and_normal2.getOne();
+            normal = length_and_normal2.two();
+            displacement = length_and_normal2.one();
             normal = normal.multiply(-1);
 
         }
