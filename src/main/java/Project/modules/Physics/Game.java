@@ -81,7 +81,7 @@ public class Game {
         while (t < MAX_TIME) {
             Utility_Functions.sortOSX(blocklist);
             Utility_Functions.sortOSY(blocklist);
-            t += dt / 8;
+            t += dt / 8.0;
             for (Point point : pointList) {
                 point.run(dt);
             }
@@ -99,6 +99,7 @@ public class Game {
                 makeLink();
                 makeCollision(manifold);
             }
+            makeLink();
         }
         List<Score> results = new ArrayList<>();
         for (Stool stool : stoolList) {
@@ -172,7 +173,7 @@ public class Game {
                         Utility_Functions.sortOSX(blocklist);
                         Utility_Functions.sortOSY(blocklist);
 
-                        t += dt / 8;
+                        t += dt / 8.0;
 
                         makeLink();
 
@@ -188,6 +189,7 @@ public class Game {
                             makeLink();
                             makeCollision(manifold);
                         }
+                        makeLink();
 
                         // update camera pos
                         if (camera != null) {
@@ -239,6 +241,7 @@ public class Game {
                 pointk = new Point2D(one.getX() + i * weight / n, two.getY());
                 point1 = new Point(new Circle(pointk.getX(), pointk.getY(), rad));
                 pointList.add(point1);
+                addPoint(point1,onePoint,twoPoint,threePoint,fourPoint);
                 newBlock.getAllPointList().add(point1);
             }
             linkList.add(new Link(point1.circle, point.circle, weight / n));
@@ -257,6 +260,7 @@ public class Game {
                 pointk = new Point2D(two.getX(), two.getY() + i * height / n);
                 point1 = new Point(new Circle(pointk.getX(), pointk.getY(), rad));
                 pointList.add(point1);
+                addPoint(point1,onePoint,twoPoint,threePoint,fourPoint);
                 newBlock.getAllPointList().add(point1);
             }
             linkList.add(new Link(point1.circle, point.circle, height / n));
@@ -275,6 +279,7 @@ public class Game {
                 pointk = new Point2D(three.getX() - i * weight / n, three.getY());
                 point1 = new Point(new Circle(pointk.getX(), pointk.getY(), rad));
                 pointList.add(point1);
+                addPoint(point1,onePoint,twoPoint,threePoint,fourPoint);
                 newBlock.getAllPointList().add(point1);
             }
             linkList.add(new Link(point1.circle, point.circle, weight / n));
@@ -292,11 +297,13 @@ public class Game {
                 pointk = new Point2D(four.getX(), four.getY() - i * height / n);
                 point1 = new Point(new Circle(pointk.getX(), pointk.getY(), rad));
                 pointList.add(point1);
+                addPoint(point1,onePoint,twoPoint,threePoint,fourPoint);
                 newBlock.getAllPointList().add(point1);
             }
 
             linkList.add(new Link(point1.circle, point.circle, height / n));
             point = point1;
+
         }
 
 
