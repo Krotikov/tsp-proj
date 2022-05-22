@@ -8,32 +8,37 @@ import Project.modules.evolution.score.Score;
 import Project.modules.utils.CustomRandom;
 import Project.modules.utils.Utils;
 
-import java.util.ArrayList;
-import java.util.Collections;
-import java.util.List;
+import java.util.*;
 
-import java.util.Map;
 import java.util.stream.Stream;
 
 /**
  * Самая простая реализация эволюционного алгоритма
  *
  * @author Андрей и Иван
+ *
  */
 public class EvolutionAlg implements Evolution {
-    private final static Evolution instance = new EvolutionAlg();
-    private final Genomes genomes; //текущий геном
+    private static final EvolutionAlg[] instances = {new EvolutionAlg(), new EvolutionAlg()};
+    private  Genomes genomes; //текущий геном
     private List<Double> genomeScores; //результаты для предыдущей эпохи
-    private int epoch; //эпоха
+    private int epoch = 0; //эпоха
 
     private EvolutionAlg() {
-        epoch = 0;
-        int pSize = GenomeConfig.POPULATION_SIZE;
-        genomes = new Genomes(pSize);
+        reset();
     }
 
-    public static Evolution getInstance() {
-        return instance;
+    public static EvolutionAlg getInstance(String x) {
+        return switch (x){
+            case "first" -> instances[0];
+            case "second" -> instances[1];
+            default -> throw new IllegalStateException("Unexpected value: " + x);
+        };
+    }
+
+    public void reset(){
+        int pSize = GenomeConfig.POPULATION_SIZE;
+        genomes = new Genomes(pSize);
     }
 
     private void update() {
@@ -85,7 +90,7 @@ public class EvolutionAlg implements Evolution {
             double r2 = CustomRandom.inRange(0., 1. - probs.get(i));
             sum = 0;
             for (j = 0; j < probs.size(); j++) {
-                if(j == i) continue;
+                if (j == i) continue;
                 sum += probs.get(j);
                 if (sum > r2) {
                     break;
@@ -99,9 +104,13 @@ public class EvolutionAlg implements Evolution {
     @Override
     public Genome bestBy(List<Score> results) {
         genomeScores = results.stream()
-                .map(score -> score.dist() + GenomeConfig.TIME_WEIGHT * (score.time() / GenomeConfig.MAX_TIME)).toList();
+                .map(score -> score.dist() / GenomeConfig.NORM - score.hDiff() + (score.time() / GenomeConfig.MAX_TIME))
+                .map(value -> value > 0 ? value : 0)
+                .toList();
         int maxScoreIndex = genomeScores.indexOf(Collections.max(genomeScores));
-        return genomes.get(maxScoreIndex);
+        Genome best = genomes.get(maxScoreIndex);
+        best.setScore(Collections.max(genomeScores));
+        return best;
     }
 
     @Override

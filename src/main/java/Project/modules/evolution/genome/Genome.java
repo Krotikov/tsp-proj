@@ -1,5 +1,6 @@
 package Project.modules.evolution.genome;
 
+import Project.modules.evolution.score.Score;
 import Project.modules.utils.CustomRandom;
 import lombok.AllArgsConstructor;
 
@@ -9,8 +10,9 @@ import java.util.Map;
 
 @AllArgsConstructor
 public class Genome {
-    LegGenome left;
-    LegGenome right;
+    final LegGenome  left;
+    final LegGenome right;
+    Double score;
 
     private static LegGenome setupLeg() {
         double mValue = CustomRandom.inRange(
@@ -28,6 +30,15 @@ public class Genome {
     public Genome() {
         left = setupLeg();
         right = setupLeg();
+        score = null;
+    }
+
+    public double getScore() {
+        return score;
+    }
+
+    public void setScore(double score) {
+        this.score = score;
     }
 
     public Map<String, LegGenome> params() {
