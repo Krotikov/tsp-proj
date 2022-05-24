@@ -8,10 +8,8 @@ import Project.modules.Physics.Camera;
 import Project.modules.Physics.Game;
 import Project.modules.Physics.Point;
 import Project.modules.Physics.Stool;
-import Project.modules.Test.TestParallel;
+import Project.modules.Test.EpochProcess;
 import Project.modules.evolution.Evolution;
-import Project.modules.evolution.genome.Genome;
-import Project.modules.evolution.score.Score;
 import javafx.animation.PauseTransition;
 import javafx.collections.FXCollections;
 import javafx.event.ActionEvent;
@@ -45,9 +43,10 @@ public class PleaseProvideControllerClassName implements Initializable {
     List<String> styleList = new ArrayList<>();
     Map<String, Stool> stoolMap = new HashMap<>();
     private Game game;
-    private Stool stool;
     private Camera camera;
 
+    private int epoch = 1;
+    private final List<Double> scores = new ArrayList<>();
     @FXML
     private ListView<Label> Legend;
 
@@ -94,30 +93,40 @@ public class PleaseProvideControllerClassName implements Initializable {
         Def.fire();
     }
 
-    @FXML
-    void SetAction(ActionEvent event) {
 
+    @FXML
+    void NextClick(ActionEvent event) {
         Set.setStyle("-fx-background-color: rgba(125,132,132,0.37); -fx-border-color: BLUE;");
         pauseTransitionList.get(Buttons.SET.ind).playFromStart();
 
-        String num = SetField.getText();
-        try {
-            int val = Integer.parseInt(num);
-            if (val > 100) {
-                SetField.setText(">100!");
+        int nextStage = 0;
+        String nextInput = SetField.getText();
+        if (nextInput.isEmpty()) {
+            nextStage += 1;
+        } else {
+            try {
+                nextStage = Integer.parseInt(nextInput);
+                if (nextStage > 100) {
+                    SetField.setText(">100!");
+                }
+                if (nextStage < 0) {
+                    SetField.setText("<0!");
+                }
+            } catch (NumberFormatException e) {
+                SetField.setText("Wrong format ");
+                return;
             }
-            if (val < 0) {
-                SetField.setText("<0!");
-            }
-        } catch (NumberFormatException e) {
-            SetField.setText("Wrong format ");
         }
+
+        nextStageEv(nextStage);
+        SetField.clear();
     }
 
     @FXML
     void DefAction(ActionEvent event) {
         Def.setStyle("-fx-background-color: rgba(125,132,132,0.37); -fx-border-color: BLUE;");
         pauseTransitionList.get(Buttons.DEF.ind).playFromStart();
+
 
         String[] nums = DefField.getText().split(",");
         try {
@@ -165,9 +174,8 @@ public class PleaseProvideControllerClassName implements Initializable {
 
 
         Label StoolOne = new Label("One");
-        Label StoolTwo = new Label("two");
 
-        Legend.setItems(FXCollections.observableArrayList(StoolOne, StoolTwo));
+        Legend.setItems(FXCollections.observableArrayList(StoolOne));
         Legend.setCellFactory(lv -> new ListCell<>() {
             @Override
             protected void updateItem(Label item, boolean empty) {
@@ -186,6 +194,8 @@ public class PleaseProvideControllerClassName implements Initializable {
         addButtonsPause();
     }
 
+
+
     private Point ViewStoolPoint(Stool stool) {
         return stool.getBody().getAllPoints().get(0);
     }
@@ -196,27 +206,38 @@ public class PleaseProvideControllerClassName implements Initializable {
         game = new Game();
         camera = new Camera(game);
 
+        Evolution alg = Game.getFirstAlg();
+        alg.reset();
 
-        Evolution alg1 = Game.getAlgorithm();
-        //Evolution alg2 = Game.getAlgorithm();
-
-        if (alg1.hasNext()) {
-            List<Genome> genomes1 = alg1.next();
-            //List<Genome> genomes2 = alg2.next();
-
-            TestParallel test1 = new TestParallel(genomes1);
-            //TestParallel test2 = new TestParallel(genomes2);
-            List<Score> results = test1.run();
-            Genome best = alg1.bestBy(results);
-
-            // add two Stools to project
-            Stool stool1 = new Stool(best.params(), game, Color.AQUAMARINE);
-            stoolMap.put(Legend.getItems().get(0).getText(), stool1);
-            Stool stool2 = new Stool(best.params(), game, Color.BLANCHEDALMOND);
-            stoolMap.put(Legend.getItems().get(1).getText(), stool2);
+        if (alg.hasNext()) {
+            // add Stool to project
+            Stool stool = EpochProcess.getUpdatedStool(scores, alg, game, Color.AQUAMARINE);
+            stoolMap.put(Legend.getItems().get(0).getText(), stool);
         }
 
+        game.initObjects();
+        game.run(this.SubScene);
+    }
 
+    private void nextStageEv(int stage) {
+        if (stage == 0) {
+            return;
+        }
+
+        epoch += stage;
+
+        stoolMap.clear();
+        game = new Game();
+        camera = new Camera(game);
+        Evolution alg = Game.getFirstAlg();
+
+        if (alg.hasNext()) {
+            Stool stool = null;
+            for (int i = 0; i < stage; i++) {
+                stool = EpochProcess.getUpdatedStool(scores, alg, game, Color.AQUAMARINE);
+            }
+            stoolMap.put(Legend.getItems().get(0).getText(), stool);
+        }
 
         game.initObjects();
         game.run(this.SubScene);

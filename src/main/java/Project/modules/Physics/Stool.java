@@ -7,6 +7,8 @@ import java.util.ArrayList;
 import java.util.List;
 import java.util.Map;
 
+import static Project.modules.evolution.genome.GenomeConfig.TRIG_PERIOD_LIM;
+
 public class Stool {
     static final Point2D startPoint = new Point2D(150, 260);
     static final double weightBody = 300;
@@ -21,6 +23,8 @@ public class Stool {
     private Point2D normalDown;
     private boolean life = true;
     private final double startPos;
+
+    private double hDiff;
     // parameters
     private final List<Map<Character, Double>> genome = new ArrayList<>();
 
@@ -82,9 +86,13 @@ public class Stool {
         return color;
     }
 
+    public double getHDiff(){
+        return hDiff;
+    }
+
 
     double evaluateAt(Map<Character, Double> gens, double time) {
-        return (gens.get('M') - gens.get('m')) / 2 * (1 + Math.sin((time) * Math.PI * 2 / gens.get('p'))) + gens.get('m');
+        return (gens.get('M') - gens.get('m')) / 2 * (1 + Math.sin((time * TRIG_PERIOD_LIM + gens.get('o')) * Math.PI * 2 / gens.get('p'))) + gens.get('m');
     }
 
 
@@ -136,6 +144,7 @@ public class Stool {
 
     void run(double t){
         life = constraint();
+         hDiff = body.getPointList().get(1).pos.getY() - body.getPointList().get(0).pos.getY();
         if(life) {
             normalDown = body.getNormals().get(2);
             double phi1 = -evaluateAt(genome.get(0), t);

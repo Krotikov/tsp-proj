@@ -9,23 +9,24 @@ package Project.modules.evolution.genome;
  */
 
 public class GenomeConfig {
-    public static final Double MAX_VALUE_P=10.;
-    public static final Double MIN_VALUE_P=1.;
+    public static final Double MAX_VALUE_P=100.;
+    public static final Double MIN_VALUE_P=.01;
+    public static final int NORM = 1000;
 
     public static final Double MAX_VALUE_O=Math.PI;
     public static final Double MIN_VALUE_O=-Math.PI;
 
     public static final Double MAX_VALUE_m=0.;
-    public static final Double MIN_VALUE_m=-0.09;
+    public static final Double MIN_VALUE_m=-0.25;
 
-    public static final Double MAX_VALUE_M=0.09;
+    public static final Double MAX_VALUE_M=0.25;
 
     public static final int POPULATION_SIZE = 24;
-    public static final int MAX_EPOCH = 10;
+    public static final int MAX_EPOCH = 1000;
 
-    public static final Double H_DIFF_WEIGHT = 0.1;
     public static final Double MAX_TIME =  20.;
-    public static final Double TIME_WEIGHT = 0.1;
+
+    public static final double TRIG_PERIOD_LIM = 0.3;
 
     public static final Integer LEG_LENGTH = 5;
 

@@ -33,19 +33,23 @@ public class Game {
     private final List<Point> pointList = new ArrayList<>();
     private final List<Block> blocklist = new ArrayList<>();
     public final List<Stool> stoolList = new ArrayList<>();
-    private static Evolution algorithm;
+
+    private static final Evolution firstAlg = EvolutionAlg.getInstance("first");
+    private static final Evolution secondAlg = EvolutionAlg.getInstance("second");
     private final Group group = new Group();
     private Camera camera = null;
     private Block platform;
     boolean DEBUG = false;
     private static final double MAX_TIME = 20;
 
-    public static Evolution getAlgorithm() {
-        if (algorithm == null) {
-            algorithm = EvolutionAlg.getInstance();
-        }
-        return algorithm;
+    public static Evolution getFirstAlg() {
+        return firstAlg;
     }
+
+    public static Evolution getSecondAlg() {
+        return secondAlg;
+    }
+
 
     private void setWorldForView() {
         final int weight = 50;
@@ -104,7 +108,8 @@ public class Game {
         List<Score> results = new ArrayList<>();
         for (Stool stool : stoolList) {
             var dist = stool.getDist();
-            results.add(new Score(dist >= 0 ? dist : 0, t));
+            var hDiff = stool.getHDiff();
+            results.add(new Score(dist >= 0 ? dist : 0, hDiff, t));
         }
         return results;
     }
@@ -241,7 +246,7 @@ public class Game {
                 pointk = new Point2D(one.getX() + i * weight / n, two.getY());
                 point1 = new Point(new Circle(pointk.getX(), pointk.getY(), rad));
                 pointList.add(point1);
-                addPoint(point1,onePoint,twoPoint,threePoint,fourPoint);
+                addPoint(point1, onePoint, twoPoint, threePoint, fourPoint);
                 newBlock.getAllPointList().add(point1);
             }
             linkList.add(new Link(point1.circle, point.circle, weight / n));
@@ -297,7 +302,7 @@ public class Game {
                 pointk = new Point2D(four.getX(), four.getY() - i * height / n);
                 point1 = new Point(new Circle(pointk.getX(), pointk.getY(), rad));
                 pointList.add(point1);
-                addPoint(point1,onePoint,twoPoint,threePoint,fourPoint);
+                addPoint(point1, onePoint, twoPoint, threePoint, fourPoint);
                 newBlock.getAllPointList().add(point1);
             }
 
