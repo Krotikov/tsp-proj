@@ -34,7 +34,7 @@
     </rowConstraints>
     <LineChart fx:id="graph" GridPane.rowIndex="1">
       <xAxis>
-          <CategoryAxis side="BOTTOM"/>
+          <NumberAxis side="BOTTOM"/>
       </xAxis>
       <yAxis>
           <NumberAxis side="LEFT"/>

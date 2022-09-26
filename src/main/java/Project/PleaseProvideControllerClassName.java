@@ -17,6 +17,7 @@ import javafx.fxml.FXML;
 import javafx.fxml.Initializable;
 import javafx.scene.SubScene;
 import javafx.scene.chart.LineChart;
+import javafx.scene.chart.XYChart;
 import javafx.scene.control.*;
 import javafx.scene.input.MouseEvent;
 import javafx.scene.paint.Color;
@@ -69,7 +70,7 @@ public class PleaseProvideControllerClassName implements Initializable {
     private SubScene SubScene; // Value injected by FXMLLoader
 
     @FXML // fx:id="graph"
-    private LineChart<?, ?> graph; // Value injected by FXMLLoader
+    private LineChart<Number, Number> graph; // Value injected by FXMLLoader
 
     @FXML // fx:id="start"
     private Button start; // Value injected by FXMLLoader
@@ -217,6 +218,8 @@ public class PleaseProvideControllerClassName implements Initializable {
 
         game.initObjects();
         game.run(this.SubScene);
+        graph();
+
     }
 
     private void nextStageEv(int stage) {
@@ -241,6 +244,7 @@ public class PleaseProvideControllerClassName implements Initializable {
 
         game.initObjects();
         game.run(this.SubScene);
+        graph();
     }
 
     private void addButtonsPause() {
@@ -258,5 +262,14 @@ public class PleaseProvideControllerClassName implements Initializable {
         pauseTransitionList.get(Buttons.DEF.ind).setOnFinished(actionEvent -> Def.setStyle(styleList.get(Buttons.DEF.ind)));
         pauseTransitionList.get(Buttons.SET.ind).setOnFinished(actionEvent -> Set.setStyle(styleList.get(Buttons.SET.ind)));
 
+    }
+    public void graph() {
+
+        double lastY = 0.0;
+        lastY = scores.get(scores.size() - 1);
+
+        XYChart.Series series = new XYChart.Series();
+        series.getData().add(new XYChart.Data(epoch, lastY));
+        graph.getData().add(series);
     }
 }

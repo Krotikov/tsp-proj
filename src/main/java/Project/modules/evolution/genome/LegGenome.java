@@ -1,13 +1,14 @@
 package Project.modules.evolution.genome;
 
-import lombok.Getter;
-
 import java.util.HashMap;
 import java.util.Map;
 
-@Getter
 public class LegGenome {
     Map<Character, Double> gens;
+
+    public Map<Character, Double> getGens() {
+        return gens;
+    }
 
     public LegGenome(Double p, Double o, Double M, Double m) {
         gens = new HashMap<>();

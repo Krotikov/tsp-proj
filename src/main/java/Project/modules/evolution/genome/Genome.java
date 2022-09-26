@@ -1,14 +1,11 @@
 package Project.modules.evolution.genome;
 
-import Project.modules.evolution.score.Score;
 import Project.modules.utils.CustomRandom;
-import lombok.AllArgsConstructor;
 
 import java.util.HashMap;
 import java.util.Map;
 
 
-@AllArgsConstructor
 public class Genome {
     final LegGenome  left;
     final LegGenome right;
